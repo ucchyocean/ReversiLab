@@ -44,6 +44,13 @@ public class ReversiLab extends JavaPlugin {
     @Override
     public void onEnable() {
 
+        // サーバーのバージョンが v1.7.10 以前なら、プラグインを停止して動作しない。
+        if ( !Utility.isCB180orLater() ) {
+            getLogger().severe("This plugin cannot run at old version Bukkit server. Please use Bukkit 1.8 or later.");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
         // ワールドのロード
         world = getServer().getWorld(WORLD_NAME);
         if ( world == null ) {
