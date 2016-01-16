@@ -1,4 +1,4 @@
-BukkitReversi
+ReversiLab
 ===============
 
-BukkitReversi
+ReversiLab
