@@ -18,6 +18,9 @@ public class ReversiLabConfig {
     /** メッセージの言語 */
     private String lang;
 
+    /** 対戦の開始と終了を、サーバー全体メッセージで通知するかどうか */
+    private boolean broadcastSessionStartEnd;
+
     /** ゲーム終了してから、テレポートして元の場所に戻るまでの、待ち時間（秒） */
     private int sessionEndWaitSeconds;
 
@@ -56,11 +59,16 @@ public class ReversiLabConfig {
 
         // 読み込み
         lang = conf.getString("lang", Utility.getDefaultLocaleLanguage());
+        broadcastSessionStartEnd = conf.getBoolean("broadcastSessionStartEnd", false);
         sessionEndWaitSeconds = conf.getInt("sessionEndWaitSeconds", 15);
     }
 
     public String getLang() {
         return lang;
+    }
+
+    public boolean isBroadcastSessionStartEnd() {
+        return broadcastSessionStartEnd;
     }
 
     public int getSessionEndWaitSeconds() {

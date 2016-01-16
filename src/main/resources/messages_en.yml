@@ -20,7 +20,7 @@ InformationJoinSpectator: 'You joined session as spectator. If you want to leave
 InformationLeaveSpectator: 'You left session.'
 InformationEndWait: 'After %seconds seconds, you will teleport back.'
 
-InformationYourTurn: ' \n&eYour turn. Place your stone.'
+InformationYourTurn: ' \n&eYour turn. Put your stone.'
 InformationOtherTurn: ' \n&7Opponent''s turn.'
 
 ButtonInvitationAccept: '&f[&6Accept (/rev accept)&f]'
@@ -40,3 +40,7 @@ ErrorNotFoundSession: 'Cannot find a session to cancel.'
 ErrorCannotCancelSession: 'Cannot cancel the session.'
 ErrorJoinedSessionAlready: 'Because you are in session already, you cannot join as spectator.'
 ErrorSpectatorInvalidArgument: 'If you want to join as spectator, please specify the player name. \nex) /rev spectator (PlayerName)'
+
+BroadcastSessionStart: '&6Reversi session (%owner vs %opponent) started!'
+BroadcastSessionEnd: '&6Reversi session (%owner vs %opponent) ended! winner: %winner (%black : %white)'
+BroadcastSessionEndDraw: '&6Reversi session (%owner vs %opponent) ended! draw game (%black : %white)'

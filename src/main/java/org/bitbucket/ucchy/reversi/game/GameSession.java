@@ -16,6 +16,7 @@ import org.bitbucket.ucchy.reversi.Utility;
 import org.bitbucket.ucchy.reversi.tellraw.ClickEventType;
 import org.bitbucket.ucchy.reversi.tellraw.MessageComponent;
 import org.bitbucket.ucchy.reversi.tellraw.MessageParts;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -181,6 +182,10 @@ public class GameSession {
 
         // メッセージを流す
         sendInfoMessageAll(Messages.get("InformationStarting"));
+        if ( parent.getReversiLabConfig().isBroadcastSessionStartEnd() ) {
+            sendBroadcastInfoMessage(Messages.get("BroadcastSessionStart",
+                    new String[]{"%owner", "%opponent"}, new String[]{ownerName, opponentName}));
+        }
 
         // そのまま、IN_GAMEフェーズに進む
         runInGame();
@@ -336,6 +341,20 @@ public class GameSession {
         sendInfoMessageAll(msg);
         sendInfoMessageAll(Messages.get("InformationEndWait", "%seconds", sessionEndWaitSeconds));
 
+        if ( parent.getReversiLabConfig().isBroadcastSessionStartEnd() ) {
+            if ( winner != null ) {
+                msg = Messages.get("BroadcastSessionEnd",
+                        new String[]{"%owner", "%opponent", "%black", "%white", "%winner"},
+                        new String[]{ownerName, opponentName, "" + black, "" + white, winner});
+            } else {
+                msg = Messages.get("BroadcastSessionEndDraw",
+                        new String[]{"%owner", "%opponent", "%black", "%white"},
+                        new String[]{ownerName, opponentName, "" + black, "" + white});
+            }
+
+            sendBroadcastInfoMessage(msg);
+        }
+
         // 盤面をログに記録する
         for ( String line : board.getStringForPrint() ) {
             logger.log(line);
@@ -437,12 +456,14 @@ public class GameSession {
             }
         }
 
-        // 10秒後に、フィールドをクリーンアップする
-        new BukkitRunnable() {
-            public void run() {
-                field.cleanup();
-            }
-        }.runTaskLater(ReversiLab.getInstance(), 10 * 20);
+        // 10秒後に、フィールドをクリーンアップする。だたし、プラグインがdisabledなら実施しない。
+        if ( ReversiLab.getInstance().isEnabled() ) {
+            new BukkitRunnable() {
+                public void run() {
+                    field.cleanup();
+                }
+            }.runTaskLater(ReversiLab.getInstance(), 10 * 20);
+        }
     }
 
     /**
@@ -691,5 +712,15 @@ public class GameSession {
         Player player = Utility.getPlayerExact(playerName);
         if ( player == null ) return;
         component.send(player);
+    }
+
+    /**
+     * ブロードキャストで、サーバー全体に情報メッセージを送る。
+     * @param message メッセージ
+     */
+    private void sendBroadcastInfoMessage(String message) {
+        if ( message == null || message.equals("") ) return;
+        String prefix = Messages.get("PrefixInformation");
+        Bukkit.broadcastMessage(prefix + message);
     }
 }
