@@ -2,3 +2,10 @@
 # @author     ucchy
 # @license    LGPLv3
 # @copyright  Copyright ucchy 2016
+
+
+# Message locale.
+lang: 'en'
+
+# The wait seconds, from session ends, to teleport back.
+sessionEndWaitSeconds: 15

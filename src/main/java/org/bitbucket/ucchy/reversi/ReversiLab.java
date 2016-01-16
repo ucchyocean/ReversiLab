@@ -53,8 +53,8 @@ public class ReversiLab extends JavaPlugin {
         config = new ReversiLabConfig();
 
         // メッセージをロードする
-        Messages.initialize(getFile(), getDataFolder(), "ja");
-        Messages.reload("ja");
+        Messages.initialize(getFile(), getDataFolder(), config.getLang());
+        Messages.reload(config.getLang());
 
         // マネージャの作成
         gameSessionManager = new GameSessionManager(this);
@@ -149,7 +149,7 @@ public class ReversiLab extends JavaPlugin {
      * ReversiLabのコンフィグデータを取得する
      * @return
      */
-    public ReversiLabConfig getBukkitReversiConfig() {
+    public ReversiLabConfig getReversiLabConfig() {
         return config;
     }
 
@@ -191,18 +191,5 @@ public class ReversiLab extends JavaPlugin {
      */
     public static ReversiLab getInstance() {
         return (ReversiLab)Bukkit.getPluginManager().getPlugin("ReversiLab");
-    }
-
-    /**
-     * このプラグインをリロードする
-     */
-    protected void reload() {
-
-        // コンフィグのロード
-        config = new ReversiLabConfig();
-
-        // メッセージをロードする
-        Messages.initialize(getFile(), getDataFolder(), "ja");
-        Messages.reload("ja");
     }
 }

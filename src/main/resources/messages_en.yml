@@ -2,3 +2,41 @@
 # @author     ucchy
 # @license    LGPLv3
 # @copyright  Copyright ucchy 2016
+
+PrefixInformation: '&6[Rev]&b'
+PrefixError: '&6[Rev]&c'
+
+InformationInvitationSent: 'Reversi session request was sent to %opponent.'
+InformationInvitationGot: 'You got a reversi session request from %owner.'
+InformationInvitationDeny: 'Reversi session request was denyed.'
+InformationPreparing: 'Now preparing reversi. Please wait....'
+InformationStarting: 'Welcome to Reversi!! Have a fun.'
+InformationAutoPass: '%player could not put stone. Passed.'
+InformationCancel: 'Reversi session was canceled.'
+InformationEnd: '%winner wins!! (%black vs %white)'
+InformationEndDraw: 'Draw game. (%black vs %white)'
+InformationReloaded: 'Config and message files were reloaded.'
+InformationJoinSpectator: 'You joined session as spectator. If you want to leave, run command "/rev spectator".'
+InformationLeaveSpectator: 'You left session.'
+InformationEndWait: 'After %seconds seconds, you will teleport back.'
+
+InformationYourTurn: ' \n&eYour turn. Place your stone.'
+InformationOtherTurn: ' \n&7Opponent''s turn.'
+
+ButtonInvitationAccept: '&f[&6Accept (/rev accept)&f]'
+ButtonInvitationDeny: '&f[&6Deny (/rev deny)&f]'
+
+ErrorNotYourTurn: 'Not your turn.'
+ErrorCannotPut: 'Cannot place your stone here.'
+
+ErrorNotHavePermission: 'You do not have a permission.'
+ErrorNotPlayer: 'Run this command in game.'
+ErrorNotSpecifiedVersusPlayer: 'Specify the opponent player name. ex) /rev versus (PlayerName)'
+ErrorCannotSpecifySelfVersus: 'You cannot send a session request to yourself.'
+ErrorCannotFindPlayer: 'Cannot find the specified player.'
+ErrorTargetIsInGame: 'The specified player has been in other session.'
+ErrorNotFoundVersusSession: 'You did not get the session request.'
+ErrorNotFoundSession: 'Cannot find a session to cancel.'
+ErrorCannotCancelSession: 'Cannot cancel the session.'
+ErrorJoinedSessionAlready: 'Because you are in session already, you cannot join as spectator.'
+ErrorSpectatorInvalidArgument: 'If you want to join as spectator, please specify the player name. \nex) /rev spectator (PlayerName)'

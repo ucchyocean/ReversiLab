@@ -132,6 +132,28 @@ public class GameBoard {
     }
 
     /**
+     * ログ記録やデバッグ出力のための、盤面状況の文字表現を取得する。
+     * @return 盤面
+     */
+    public ArrayList<String> getStringForPrint() {
+
+        ArrayList<String> field = new ArrayList<String>();
+        field.add("+----------------+");
+        for ( CellState[] line : board ) {
+            StringBuffer buffer = new StringBuffer();
+            buffer.append("|");
+            for ( CellState cell : line ) {
+                buffer.append(cell.toDisplayString());
+            }
+            buffer.append("|");
+            field.add(buffer.toString());
+        }
+        field.add("+----------------+");
+
+        return field;
+    }
+
+    /**
      * 指定された状態のマス目の個数を数える
      * @param state 状態
      * @return 個数
@@ -195,15 +217,9 @@ public class GameBoard {
      * 盤面をデバッグ出力する。
      */
     private void debugPrint() {
-        System.out.println("+----------------+");
-        for ( CellState[] line : board ) {
-            System.out.print("|");
-            for ( CellState cell : line ) {
-                System.out.print(cell.toDisplayString());
-            }
-            System.out.println("|");
+        for ( String line : getStringForPrint() ) {
+            System.out.println(line);
         }
-        System.out.println("+----------------+");
     }
 
     // デバッグ用エントリ

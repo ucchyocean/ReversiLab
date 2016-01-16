@@ -3,3 +3,9 @@
 # @license    LGPLv3
 # @copyright  Copyright ucchy 2016
 
+
+# メッセージの言語（ja = 日本語、en = 英語）
+lang: 'ja'
+
+# ゲーム終了してから、テレポートして元の場所に戻るまでの、待ち時間（秒）
+sessionEndWaitSeconds: 15

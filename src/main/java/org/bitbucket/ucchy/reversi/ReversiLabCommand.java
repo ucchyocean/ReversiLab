@@ -305,7 +305,8 @@ public class ReversiLabCommand implements TabExecutor {
         }
 
         // リロードする
-        parent.reload();
+        parent.getReversiLabConfig().reload();
+        Messages.reload(parent.getReversiLabConfig().getLang());
 
         sendInfoMessage(sender, Messages.get("InformationReloaded"));
         return true;

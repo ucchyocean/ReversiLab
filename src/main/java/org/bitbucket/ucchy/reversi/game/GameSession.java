@@ -5,6 +5,7 @@
  */
 package org.bitbucket.ucchy.reversi.game;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -41,6 +42,7 @@ public class GameSession {
     private GameSessionTurn turn;
     private GameBoard board;
     private GameField field;
+    private GameSessionLogger logger;
 
     private String ownerName;
     private String opponentName;
@@ -67,6 +69,7 @@ public class GameSession {
 
         this.spectators = new ArrayList<String>();
         this.spectatorReturnPoints = new HashMap<String, Location>();
+        this.logger = new GameSessionLogger(new File(ReversiLab.getInstance().getDataFolder(), "logs"));
 
         // そのままINVITATIONフェーズを実行する
         runInvitation();
@@ -310,6 +313,7 @@ public class GameSession {
         // どちらが勝ちか確認する。
         int black = board.getBlackCount();
         int white = board.getWhiteCount();
+        int sessionEndWaitSeconds = parent.getReversiLabConfig().getSessionEndWaitSeconds();
         String winner = null;
         if ( black > white ) {
             winner = blackPlayerName;
@@ -330,7 +334,12 @@ public class GameSession {
         }
 
         sendInfoMessageAll(msg);
-        sendInfoMessageAll(Messages.get("InformationEndWait", "%seconds", 15)); // TODO
+        sendInfoMessageAll(Messages.get("InformationEndWait", "%seconds", sessionEndWaitSeconds));
+
+        // 盤面をログに記録する
+        for ( String line : board.getStringForPrint() ) {
+            logger.log(line);
+        }
 
         // 引き分けでなければ、花火を発生させる。
         if ( winner != null ) {
@@ -343,7 +352,7 @@ public class GameSession {
                 phase = GameSessionPhase.END;
                 runFinalize();
             }
-        }.runTaskLater(ReversiLab.getInstance(), 15 * 20); // TODO
+        }.runTaskLater(ReversiLab.getInstance(), sessionEndWaitSeconds * 20);
     }
 
     /**
@@ -427,6 +436,13 @@ public class GameSession {
                 spectator.setGameMode(GameMode.SURVIVAL);
             }
         }
+
+        // 10秒後に、フィールドをクリーンアップする
+        new BukkitRunnable() {
+            public void run() {
+                field.cleanup();
+            }
+        }.runTaskLater(ReversiLab.getInstance(), 10 * 20);
     }
 
     /**
@@ -612,6 +628,14 @@ public class GameSession {
     }
 
     /**
+     * ログにメッセージを1行追加する。主に、参加プレイヤーのチャットを記録することに使われる。
+     * @param message メッセージ
+     */
+    public void log(String message) {
+        logger.log(message);
+    }
+
+    /**
      * 全ての参加プレイヤーに情報メッセージを送る。
      * @param message メッセージ
      */
@@ -628,6 +652,8 @@ public class GameSession {
             if ( player == null ) continue;
             player.sendMessage(prefix + message);
         }
+
+        logger.log(message);
     }
 
     /**

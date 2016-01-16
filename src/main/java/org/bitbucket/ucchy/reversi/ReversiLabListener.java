@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
@@ -141,5 +142,21 @@ public class ReversiLabListener implements Listener {
                 event.getPlayer().setFlying(true);
             }
         }
+    }
+
+    /**
+     * プレイヤーがチャット発言をしたときに呼び出されるメソッド
+     * @param event
+     */
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+    public void onPlayerChat(AsyncPlayerChatEvent event) {
+
+        // リバーシの対局参加者でなければ、イベントを無視する。
+        GameSession session = manager.getSession(event.getPlayer());
+        if ( session == null ) return;
+
+        // チャット発言をログに記録する
+        String message = String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage());
+        session.log(message);
     }
 }
