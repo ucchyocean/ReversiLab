@@ -8,7 +8,7 @@
 lang: 'en'
 
 # Send session start and end notification message as server broadcast.
-broadcastSessionStartEnd: false
+broadcastSessionStartEnd: true
 
 # The wait seconds, from session ends, to teleport back.
 sessionEndWaitSeconds: 15

@@ -8,7 +8,7 @@
 lang: 'ja'
 
 # 対戦の開始と終了を、サーバー全体メッセージで通知するかどうか
-broadcastSessionStartEnd: false
+broadcastSessionStartEnd: true
 
 # ゲーム終了してから、テレポートして元の場所に戻るまでの、待ち時間（秒）
 sessionEndWaitSeconds: 15

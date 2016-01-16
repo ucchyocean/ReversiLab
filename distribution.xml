@@ -12,8 +12,8 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <files>
     <file>
-      <source>target/Reversi.jar</source>
-      <destName>plugins/Reversi.jar</destName>
+      <source>target/ReversiLab.jar</source>
+      <destName>plugins/ReversiLab.jar</destName>
     </file>
   </files>
 

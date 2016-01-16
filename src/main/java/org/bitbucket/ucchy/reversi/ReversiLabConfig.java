@@ -59,7 +59,7 @@ public class ReversiLabConfig {
 
         // 読み込み
         lang = conf.getString("lang", Utility.getDefaultLocaleLanguage());
-        broadcastSessionStartEnd = conf.getBoolean("broadcastSessionStartEnd", false);
+        broadcastSessionStartEnd = conf.getBoolean("broadcastSessionStartEnd", true);
         sessionEndWaitSeconds = conf.getInt("sessionEndWaitSeconds", 15);
     }
 

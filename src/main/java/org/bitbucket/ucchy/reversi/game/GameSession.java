@@ -481,7 +481,7 @@ public class GameSession {
         }
 
         // 10秒後に、フィールドをクリーンアップする。だたし、プラグインがdisabledなら実施しない。
-        if ( ReversiLab.getInstance().isEnabled() ) {
+        if ( ReversiLab.getInstance().isEnabled() && field != null ) {
             new BukkitRunnable() {
                 public void run() {
                     field.cleanup();
