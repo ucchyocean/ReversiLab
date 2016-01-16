@@ -8,6 +8,7 @@ package org.bitbucket.ucchy.reversi.game;
 import java.util.ArrayList;
 
 import org.bitbucket.ucchy.reversi.ReversiLab;
+import org.bitbucket.ucchy.reversi.Utility;
 import org.bukkit.entity.Player;
 
 /**
@@ -29,18 +30,28 @@ public class GameSessionManager {
     }
 
     /**
-     * 指定したプレイヤーのゲームセッションを取得する
+     * 指定したプレイヤーに関連するゲームセッションを取得する
      * @param player プレイヤー
      * @return ゲームセッション
      */
     public GameSession getSession(Player player) {
         for ( GameSession session : sessions ) {
-            if ( !session.isEnd() &&
-                    ( session.isOwner(player.getName()) || session.isOpponent(player.getName()) ) ) {
+            if ( !session.isEnd() && session.isRelatedPlayer(player.getName()) ) {
                 return session;
             }
         }
         return null;
+    }
+
+    /**
+     * 指定したプレイヤー名に関連するゲームセッションを取得する
+     * @param playerName プレイヤー名
+     * @return ゲームセッション
+     */
+    public GameSession getSession(String playerName) {
+        Player player = Utility.getPlayerExact(playerName);
+        if ( player == null ) return null;
+        return getSession(player);
     }
 
     /**

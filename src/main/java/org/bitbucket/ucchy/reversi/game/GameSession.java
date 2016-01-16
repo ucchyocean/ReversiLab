@@ -6,6 +6,7 @@
 package org.bitbucket.ucchy.reversi.game;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.bitbucket.ucchy.reversi.Messages;
 import org.bitbucket.ucchy.reversi.ReversiLab;
@@ -36,18 +37,20 @@ public class GameSession {
 
     private ReversiLab parent;
 
-    private String ownerName;
-    private String opponentName;
-    private String blackPlayerName;
-    private String whitePlayerName;
-
     private GameSessionPhase phase;
     private GameSessionTurn turn;
     private GameBoard board;
     private GameField field;
 
-    private Location tempOwnerLocation;
-    private Location tempOpponentLocation;
+    private String ownerName;
+    private String opponentName;
+    private String blackPlayerName;
+    private String whitePlayerName;
+    private ArrayList<String> spectators;
+
+    private Location ownerReturnPoint;
+    private Location opponentReturnPoint;
+    private HashMap<String, Location> spectatorReturnPoints;
     private TemporaryStorage tempStorage;
 
     /**
@@ -57,9 +60,13 @@ public class GameSession {
      * @param opponentName
      */
     protected GameSession(ReversiLab parent, String ownerName, String opponentName) {
+
         this.parent = parent;
         this.ownerName = ownerName;
         this.opponentName = opponentName;
+
+        this.spectators = new ArrayList<String>();
+        this.spectatorReturnPoints = new HashMap<String, Location>();
 
         // そのままINVITATIONフェーズを実行する
         runInvitation();
@@ -95,8 +102,7 @@ public class GameSession {
         this.phase = GameSessionPhase.PREPARE;
 
         // メッセージ表示
-        sendInfoMessage(ownerName, Messages.get("InformationPreparing"));
-        sendInfoMessage(opponentName, Messages.get("InformationPreparing"));
+        sendInfoMessageAll(Messages.get("InformationPreparing"));
 
         // ゲームボードを生成
         board = new GameBoard();
@@ -130,8 +136,8 @@ public class GameSession {
         opponent.eject();
 
         // 元いた場所を記憶する
-        tempOwnerLocation = owner.getLocation();
-        tempOpponentLocation = opponent.getLocation();
+        ownerReturnPoint = owner.getLocation();
+        opponentReturnPoint = opponent.getLocation();
 
         // スタート地点に送る
         owner.teleport(ownerStartLoc, TeleportCause.PLUGIN);
@@ -171,8 +177,7 @@ public class GameSession {
         whitePlayer.getInventory().addItem(quartzBlock);
 
         // メッセージを流す
-        sendInfoMessage(blackPlayerName, Messages.get("InformationStarting"));
-        sendInfoMessage(whitePlayerName, Messages.get("InformationStarting"));
+        sendInfoMessageAll(Messages.get("InformationStarting"));
 
         // そのまま、IN_GAMEフェーズに進む
         runInGame();
@@ -212,9 +217,7 @@ public class GameSession {
 
         // 黒が石を置けることを確認する。置けないならパスを行う。
         if ( !board.canPut(state) ) {
-            sendInfoMessage(blackPlayerName, Messages.get("InformationAutoPass", "%player", playerName));
-            sendInfoMessage(whitePlayerName, Messages.get("InformationAutoPass", "%player", playerName));
-
+            sendInfoMessageAll(Messages.get("InformationAutoPass", "%player", playerName));
             runPreTurn(state.getReverse());
             return;
         }
@@ -232,7 +235,7 @@ public class GameSession {
         int xOffset = location.getBlockX() - field.getOrigin().getBlockX();
         int zOffset = location.getBlockZ() - field.getOrigin().getBlockZ();
 
-        // なんか置く場所おかしい場合は、エラーメッセージを表示する。
+        // 置く場所おかしい場合は、エラーメッセージを表示する。
         if ( location.getBlockY() != field.getOrigin().getBlockY() + 1
                 || xOffset < 0 || 8 <= xOffset || zOffset < 0 || 8 <= zOffset ) {
             String name = (state == CellState.BLACK) ? blackPlayerName : whitePlayerName;
@@ -324,8 +327,7 @@ public class GameSession {
                     new String[]{"" + black, "" + white});
         }
 
-        sendInfoMessage(ownerName, msg);
-        sendInfoMessage(opponentName, msg);
+        sendInfoMessageAll(msg);
 
         runFinalize();
     }
@@ -337,8 +339,7 @@ public class GameSession {
 
         phase = GameSessionPhase.CANCEL;
 
-        sendInfoMessage(ownerName, Messages.get("InformationCancel"));
-        sendInfoMessage(opponentName, Messages.get("InformationCancel"));
+        sendInfoMessageAll(Messages.get("InformationCancel"));
 
         runFinalize();
     }
@@ -350,8 +351,7 @@ public class GameSession {
 
         phase = GameSessionPhase.INVITATION_DENYED;
 
-        sendInfoMessage(ownerName, Messages.get("InformationInvitationDeny"));
-        sendInfoMessage(opponentName, Messages.get("InformationInvitationDeny"));
+        sendInfoMessageAll(Messages.get("InformationInvitationDeny"));
 
         runFinalize();
     }
@@ -368,8 +368,8 @@ public class GameSession {
         if ( owner != null ) {
 
             // 元いた場所に戻す
-            if ( tempOwnerLocation != null ) {
-                owner.teleport(tempOwnerLocation, TeleportCause.PLUGIN);
+            if ( ownerReturnPoint != null ) {
+                owner.teleport(ownerReturnPoint, TeleportCause.PLUGIN);
             }
 
             // 飛行状態を解除する
@@ -386,8 +386,8 @@ public class GameSession {
         if ( opponent != null ) {
 
             // 元いた場所に戻す
-            if ( tempOpponentLocation != null ) {
-                opponent.teleport(tempOpponentLocation, TeleportCause.PLUGIN);
+            if ( opponentReturnPoint != null ) {
+                opponent.teleport(opponentReturnPoint, TeleportCause.PLUGIN);
             }
 
             // 飛行状態を解除する
@@ -397,6 +397,20 @@ public class GameSession {
             // 持ち物を預かっているなら返す
             if ( tempStorage != null ) {
                 tempStorage.restoreFromTemp(opponent);
+            }
+        }
+
+        for ( String name : spectators ) {
+
+            Player spectator = Utility.getPlayerExact(name);
+            if ( spectator != null ) {
+
+                // 参加前に居た場所に戻す
+                Location loc = spectatorReturnPoints.get(name);
+                spectator.teleport(loc, TeleportCause.PLUGIN);
+
+                // ゲームモードを変更
+                spectator.setGameMode(GameMode.SURVIVAL);
             }
         }
     }
@@ -430,6 +444,24 @@ public class GameSession {
     }
 
     /**
+     * 指定されたプレイヤー名は、観客かどうかを確認する。
+     * @param playerName プレイヤー名
+     * @return 観客かどうか
+     */
+    public boolean isSpectator(String playerName) {
+        return spectators.contains(playerName);
+    }
+
+    /**
+     * 指定されたプレイヤー名は、このセッションの関係者(対局者、または、観客)かどうかを確認する。
+     * @param playerName プレイヤー名
+     * @return 関係者かどうか
+     */
+    public boolean isRelatedPlayer(String playerName) {
+        return isOwner(playerName) || isOpponent(playerName) || isSpectator(playerName);
+    }
+
+    /**
      * セッションオーナーを取得する
      * @return セッションオーナー
      */
@@ -443,6 +475,23 @@ public class GameSession {
      */
     public Player getOpponentPlayer() {
         return Utility.getPlayerExact(opponentName);
+    }
+
+    /**
+     * 関連プレイヤーをすべて取得する
+     * @return 全ての関連プレイヤー
+     */
+    public ArrayList<Player> getRelatedPlayers() {
+        ArrayList<Player> players = new ArrayList<Player>();
+        Player owner = getOwnerPlayer();
+        if ( owner != null ) players.add(owner);
+        Player opponent = getOpponentPlayer();
+        if ( opponent != null ) players.add(opponent);
+        for ( String name : spectators ) {
+            Player spectator = Utility.getPlayerExact(name);
+            if ( spectator != null ) players.add(spectator);
+        }
+        return players;
     }
 
     /**
@@ -471,6 +520,49 @@ public class GameSession {
         }
 
         return false;
+    }
+
+    /**
+     * 観客としてゲーム参加する
+     * @param player
+     */
+    public void joinSpectator(Player player) {
+
+        if ( spectators.contains(player.getName()) ) {
+            return;
+        }
+
+        // 観客に追加
+        spectators.add(player.getName());
+        spectatorReturnPoints.put(player.getName(), player.getLocation());
+
+        // ゲームフィールドへテレポート
+        player.teleport(field.getCenterRespawnPoint(), TeleportCause.PLUGIN);
+
+        // ゲームモードを変更
+        player.setGameMode(GameMode.SPECTATOR);
+    }
+
+    /**
+     * ゲームの観客から退出する
+     * @param player
+     */
+    public void leaveSpectator(Player player) {
+
+        if ( !spectators.contains(player.getName()) ) {
+            return;
+        }
+
+        // 参加前に居た場所に戻す
+        Location loc = spectatorReturnPoints.get(player.getName());
+        player.teleport(loc, TeleportCause.PLUGIN);
+
+        // 観客から削除する
+        spectators.remove(player.getName());
+        spectatorReturnPoints.remove(player.getName());
+
+        // ゲームモードを変更
+        player.setGameMode(GameMode.SURVIVAL);
     }
 
     public int getGrid_x() {
@@ -503,6 +595,25 @@ public class GameSession {
 
     protected GameField getField() {
         return field;
+    }
+
+    /**
+     * 全ての参加プレイヤーに情報メッセージを送る。
+     * @param message メッセージ
+     */
+    private void sendInfoMessageAll(String message) {
+        if ( message == null || message.equals("") ) return;
+        ArrayList<String> players = new ArrayList<String>();
+        players.add(ownerName);
+        players.add(opponentName);
+        players.addAll(spectators);
+        String prefix = Messages.get("PrefixInformation");
+        for ( String name : players ) {
+            if ( name == null ) continue;
+            Player player = Utility.getPlayerExact(name);
+            if ( player == null ) continue;
+            player.sendMessage(prefix + message);
+        }
     }
 
     /**

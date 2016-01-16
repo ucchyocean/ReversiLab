@@ -30,14 +30,10 @@ public class PlayerMoveChecker extends BukkitRunnable {
             }
 
             GameField field = session.getField();
-            Player owner = session.getOwnerPlayer();
-            if ( owner != null && field.isOutOfSpectateField(owner.getLocation()) ) {
-                owner.teleport(field.getCenterRespawnPoint(), TeleportCause.PLUGIN);
-            }
-
-            Player opponent = session.getOpponentPlayer();
-            if ( opponent != null && field.isOutOfSpectateField(opponent.getLocation()) ) {
-                opponent.teleport(field.getCenterRespawnPoint(), TeleportCause.PLUGIN);
+            for ( Player player : session.getRelatedPlayers() ) {
+                if ( field.isOutOfSpectateField(player.getLocation()) ) {
+                    player.teleport(field.getCenterRespawnPoint(), TeleportCause.PLUGIN);
+                }
             }
         }
     }

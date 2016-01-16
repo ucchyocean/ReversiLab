@@ -81,6 +81,7 @@ public class GameField {
             stand.setMarker(true);
             stand.setGravity(false);
             stand.setSmall(true);
+            stand.setVisible(false);
             stands[y][x] = stand;
         }
 

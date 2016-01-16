@@ -3,6 +3,7 @@ package org.bitbucket.ucchy.reversi;
 import org.bitbucket.ucchy.reversi.game.CellState;
 import org.bitbucket.ucchy.reversi.game.GameSession;
 import org.bitbucket.ucchy.reversi.game.GameSessionManager;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -131,6 +132,7 @@ public class ReversiLabListener implements Listener {
             if ( session == null || session.isEnd() ) {
                 // セッションが無いのに専用ワールドに来た場合は、
                 // 強制リスポーンさせる。
+                event.getPlayer().setGameMode(GameMode.SURVIVAL);
                 event.getPlayer().setHealth(0);
             } else {
                 // セッションがあってサーバーに再参加した場合は、

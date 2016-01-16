@@ -49,6 +49,8 @@ public class ReversiLabCommand implements TabExecutor {
             return doDeny(sender, command, label, args);
         } else if ( args[0].equalsIgnoreCase("cancel") ) {
             return doCancel(sender, command, label, args);
+        } else if ( args[0].equalsIgnoreCase("spectator") ) {
+            return doSpectator(sender, command, label, args);
         } else if ( args[0].equalsIgnoreCase("rank") ) {
             return doRank(sender, command, label, args);
         } else if ( args[0].equalsIgnoreCase("reload") ) {
@@ -68,7 +70,7 @@ public class ReversiLabCommand implements TabExecutor {
         if ( args.length == 1 ) {
             String pre = args[0].toLowerCase();
             ArrayList<String> candidates = new ArrayList<String>();
-            for ( String com : new String[]{"versus", "accept", "deny", "cancel", "rank", "reload"} ) {
+            for ( String com : new String[]{"versus", "accept", "deny", "cancel", "spectator", "rank", "reload"} ) {
                 if ( com.startsWith(pre) ) {
                     candidates.add(com);
                 }
@@ -216,7 +218,67 @@ public class ReversiLabCommand implements TabExecutor {
         return true;
     }
 
+    private boolean doSpectator(CommandSender sender, Command command, String label, String[] args) {
+
+        // パーミッションのチェック
+        if ( !sender.hasPermission(PERMISSION + "spectator") ) {
+            sendErrorMessage(sender, Messages.get("ErrorNotHavePermission"));
+            return true;
+        }
+
+        // Playerでないならエラー
+        if ( !(sender instanceof Player) ) {
+            sendErrorMessage(sender, Messages.get("ErrorNotPlayer"));
+            return true;
+        }
+
+        Player player = (Player)sender;
+        GameSession mySession = parent.getGameSessionManager().getSession(player);
+        if ( mySession != null && !mySession.isEnd() ) {
+            // 既にセッションに参加している場合
+
+            // セッションの観客ではなく、プレイヤーである場合
+            if ( mySession.isOwner(player.getName()) || mySession.isOpponent(player.getName()) ) {
+                sendErrorMessage(sender, Messages.get("ErrorJoinedSessionAlready"));
+                return true;
+            }
+
+            // 観客から退出する
+            mySession.leaveSpectator(player);
+            sendInfoMessage(sender, Messages.get("InformationLeaveSpectator"));
+            return true;
+
+        } else {
+            // 現在セッションに参加していない場合
+
+            // 引数が指定されていないならエラー
+            if ( args.length < 2 ) {
+                sendErrorMessage(sender, Messages.get("ErrorSpectatorInvalidArgument"));
+                return true;
+            }
+
+            // 指定されたプレイヤー名に関連するセッションが見つからないならエラー
+            GameSession targetSession = parent.getGameSessionManager().getSession(args[1]);
+            if ( targetSession == null ) {
+                sendErrorMessage(sender, Messages.get("ErrorSpectatorInvalidArgument"));
+                return true;
+            }
+
+            // 観客として参加する
+            targetSession.joinSpectator(player);
+            sendInfoMessage(sender, Messages.get("InformationJoinSpectator"));
+            return true;
+        }
+    }
+
     private boolean doRank(CommandSender sender, Command command, String label, String[] args) {
+
+        // パーミッションのチェック
+        if ( !sender.hasPermission(PERMISSION + "rank") ) {
+            sendErrorMessage(sender, Messages.get("ErrorNotHavePermission"));
+            return true;
+        }
+
         // TODO 未実装
         return true;
     }
