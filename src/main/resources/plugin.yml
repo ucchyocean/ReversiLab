@@ -1,0 +1,53 @@
+name: ${project.name}
+version: ${project.version}
+main: org.bitbucket.ucchy.reversi.ReversiLab
+description: Reversi minigame plugin
+author: ucchy
+
+commands:
+  reversi:
+    description: Commands of ${project.name}
+    aliases: [rev]
+    usage: |
+           /<command> versus (player name) - Send a match request to the specified player.
+           /<command> accept - Accept the match request.
+           /<command> deny - Deny the match request.
+           /<command> cancel - Cancel game.
+           /<command> rank - View ranking data.
+           /<command> reload - Reload config data.
+    permission: reversilab.command
+    permission-message: 'You don''t have a permission "<permission>".'
+
+permissions:
+  reversilab.command:
+    description: Permission of command.
+    default: true
+  reversilab.versus:
+    description: Permission of versus command.
+    default: true
+  reversilab.accept:
+    description: Permission of accept command.
+    default: true
+  reversilab.deny:
+    description: Permission of deny command.
+    default: true
+  reversilab.cancel:
+    description: Permission of cancel command.
+    default: true
+  reversilab.rank:
+    description: Permission of rank command.
+    default: true
+  reversilab.reload:
+    description: Permission of reload command.
+    default: op
+
+  'reversilab.*':
+    description: All of permissions.
+    children:
+      reversilab.command: true
+      reversilab.versus: true
+      reversilab.accept: true
+      reversilab.deny: true
+      reversilab.cancel: true
+      reversilab.rank: true
+      reversilab.reload: true

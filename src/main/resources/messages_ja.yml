@@ -1,0 +1,37 @@
+# ${project.name} v${project.version}
+# @author     ucchy
+# @license    LGPLv3
+# @copyright  Copyright ucchy 2016
+
+PrefixInformation: '&6[Rev]&b'
+PrefixError: '&6[Rev]&c'
+
+InformationInvitationSent: '%opponentさんに、リバーシの対戦を申し込みました。'
+InformationInvitationGot: '%ownerさんから、リバーシの対戦を申し込まれました。'
+InformationInvitationDeny: 'リバーシの対戦が拒否されました。'
+InformationPreparing: '対戦準備中です。お待ちください....'
+InformationStarting: 'リバーシの対戦を開始します。'
+InformationAutoPass: '%playerさんは置く場所がありません。パスします。'
+InformationCancel: 'リバーシの対戦がキャンセルされました。'
+InformationEnd: '%black 対 %white で、%winnerさんの勝利です！'
+InformationEndDraw: '%black 対 %white で、引き分けです！'
+InformationReloaded: 'プラグインの設定が再読み込みされました。'
+
+InformationYourTurn: ' \n&eあなたのターンです。石を置いてください。'
+InformationOtherTurn: ' \n&7相手のターンです。'
+
+ButtonInvitationAccept: '&f[&6対戦を受ける(/rev accept)&f]'
+ButtonInvitationDeny: '&f[&6対戦を拒否する(/rev deny)&f]'
+
+ErrorNotYourTurn: 'あなたのターンではないので、石を置けません。'
+ErrorCannotPut: 'ここには石を置けません。'
+
+ErrorNotHavePermission: 'パーミッションが無いため実行できません。'
+ErrorNotPlayer: 'このコマンドはゲーム内で実行してください。'
+ErrorNotSpecifiedVersusPlayer: '対戦相手を指定してください。例: /rev versus (player名)'
+ErrorCannotSpecifySelfVersus: '自分自身を対戦相手に指定することはできません。'
+ErrorCannotFindPlayer: '指定されたプレイヤーが見つかりません。'
+ErrorTargetIsInGame: '指定されたプレイヤーは既に対戦中です。'
+ErrorNotFoundVersusSession: '対戦申し込みを受けていません。'
+ErrorNotFoundSession: '対戦をキャンセルできるセッションがありません。'
+ErrorCannotCancelSession: '対戦をキャンセルすることができません。'
