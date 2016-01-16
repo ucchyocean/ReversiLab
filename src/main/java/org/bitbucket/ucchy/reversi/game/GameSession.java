@@ -304,7 +304,8 @@ public class GameSession {
      */
     public void runEnd() {
 
-        this.phase = GameSessionPhase.END;
+        // この時点では、まだフェーズを変更しない。IN_GAMEのままにしておく。
+        // this.phase = GameSessionPhase.END;
 
         // どちらが勝ちか確認する。
         int black = board.getBlackCount();
@@ -316,6 +317,7 @@ public class GameSession {
             winner = whitePlayerName;
         }
 
+        // メッセージを表示する
         String msg;
         if ( winner != null ) {
             msg = Messages.get("InformationEnd",
@@ -328,8 +330,20 @@ public class GameSession {
         }
 
         sendInfoMessageAll(msg);
+        sendInfoMessageAll(Messages.get("InformationEndWait", "%seconds", 15)); // TODO
 
-        runFinalize();
+        // 引き分けでなければ、花火を発生させる。
+        if ( winner != null ) {
+            field.spawnFireworks();
+        }
+
+        // 15秒後に帰還する
+        new BukkitRunnable() {
+            public void run() {
+                phase = GameSessionPhase.END;
+                runFinalize();
+            }
+        }.runTaskLater(ReversiLab.getInstance(), 15 * 20); // TODO
     }
 
     /**

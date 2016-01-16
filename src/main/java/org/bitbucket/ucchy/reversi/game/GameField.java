@@ -5,14 +5,21 @@
  */
 package org.bitbucket.ucchy.reversi.game;
 
+import org.bitbucket.ucchy.reversi.ReversiLab;
+import org.bukkit.Color;
 import org.bukkit.Effect;
+import org.bukkit.FireworkEffect;
+import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * ゲームフィールド
@@ -165,5 +172,61 @@ public class GameField {
             return true;
         }
         return false;
+    }
+
+    /**
+     * 演出用の花火を打ち上げる
+     */
+    protected void spawnFireworks() {
+
+        int duration = 20;
+
+        new BukkitRunnable() {
+            private int num = 3;
+
+            public void run() {
+
+                Location loc = center.clone().add(Math.random() * 4 - 2, 1, Math.random() * 4 - 2);
+
+                Firework firework = (Firework)center.getWorld().spawnEntity(loc, EntityType.FIREWORK);
+                FireworkMeta meta = firework.getFireworkMeta();
+                FireworkEffect effect = FireworkEffect.builder()
+                        .flicker(true)
+                        .withColor(getRandomColor())
+                        .withFade(getRandomColor())
+                        .with(Type.BALL_LARGE)
+                        .trail(true)
+                        .build();
+                meta.addEffect(effect);
+                meta.setPower(1);
+                firework.setFireworkMeta(meta);
+
+                num--;
+                if ( num <= 0 ) cancel();
+            }
+        }.runTaskTimer(ReversiLab.getInstance(), duration, duration);
+    }
+
+    private static Color getRandomColor() {
+        int value = (int)(Math.random() * 17);
+        switch (value) {
+        case 0: return Color.AQUA;
+        case 1: return Color.BLACK;
+        case 2: return Color.BLUE;
+        case 3: return Color.FUCHSIA;
+        case 4: return Color.GRAY;
+        case 5: return Color.GREEN;
+        case 6: return Color.LIME;
+        case 7: return Color.MAROON;
+        case 8: return Color.NAVY;
+        case 9: return Color.OLIVE;
+        case 10: return Color.WHITE;
+        case 11: return Color.ORANGE;
+        case 12: return Color.PURPLE;
+        case 13: return Color.RED;
+        case 14: return Color.SILVER;
+        case 15: return Color.TEAL;
+        default: return Color.YELLOW;
+        }
     }
 }

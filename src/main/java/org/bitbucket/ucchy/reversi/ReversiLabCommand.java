@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bitbucket.ucchy.reversi.game.GameSession;
+import org.bitbucket.ucchy.reversi.game.GameSessionPhase;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -150,6 +151,12 @@ public class ReversiLabCommand implements TabExecutor {
             return true;
         }
 
+        // フェーズがINVITATIONで無い場合はエラー
+        if ( session.getPhase() != GameSessionPhase.INVITATION ) {
+            sendErrorMessage(sender, Messages.get("ErrorNotFoundVersusSession"));
+            return true;
+        }
+
         // 対戦を開始する。
         session.runPrepare();
 
@@ -174,6 +181,12 @@ public class ReversiLabCommand implements TabExecutor {
         Player player = (Player)sender;
         GameSession session = parent.getGameSessionManager().getSession(player);
         if ( session == null || !session.isOpponent(player.getName()) ) {
+            sendErrorMessage(sender, Messages.get("ErrorNotFoundVersusSession"));
+            return true;
+        }
+
+        // フェーズがINVITATIONで無い場合はエラー
+        if ( session.getPhase() != GameSessionPhase.INVITATION ) {
             sendErrorMessage(sender, Messages.get("ErrorNotFoundVersusSession"));
             return true;
         }
