@@ -332,6 +332,16 @@ public class Utility {
     }
 
     /**
+     * 指定された文字列がUUIDかどうかを判定する
+     * @param source 文字列
+     * @return UUIDかどうか
+     */
+    public static boolean isUUID(String source) {
+        if ( source == null ) return false;
+        return source.toUpperCase().matches("[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}");
+    }
+
+    /**
      * 動作環境の言語設定を取得する。日本語環境なら ja、英語環境なら en が返される。
      * @return 動作環境の言語
      */

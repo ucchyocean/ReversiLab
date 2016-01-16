@@ -44,3 +44,10 @@ ErrorSpectatorInvalidArgument: '観客として参加するには、対戦に参
 BroadcastSessionStart: '&6%owner 対 %opponent のリバーシ対戦が開始しました！'
 BroadcastSessionEnd: '&6%owner 対 %opponent のリバーシ対戦が終了しました！%black 対 %white で、%winnerさんの勝利です！'
 BroadcastSessionEndDraw: '&6%owner 対 %opponent のリバーシ対戦が終了しました！%black 対 %white で、引き分けです！'
+
+RankingTitle: '&f===== %type ランキング ====='
+RankingPlay: 'プレイ数'
+RankingWin: '勝利数'
+RankingLose: '敗北数'
+RankingRatio: '勝率'
+RankingFormat: '%rank %name&f: &e%played&fplayed, &e%win&fwin, &e%lose&flose, &e%ratio&f%'

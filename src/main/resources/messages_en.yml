@@ -44,3 +44,10 @@ ErrorSpectatorInvalidArgument: 'If you want to join as spectator, please specify
 BroadcastSessionStart: '&6Reversi session (%owner vs %opponent) started!'
 BroadcastSessionEnd: '&6Reversi session (%owner vs %opponent) ended! winner: %winner (%black : %white)'
 BroadcastSessionEndDraw: '&6Reversi session (%owner vs %opponent) ended! draw game (%black : %white)'
+
+RankingTitle: '===== %type Ranking ====='
+RankingPlay: 'Play Count'
+RankingWin: 'Win Count'
+RankingLose: 'Lose Count'
+RankingRatio: 'Win Ratio'
+RankingFormat: '%rank %name&f: &e%played&fplayed, &e%win&fwin, &e%lose&flose, &e%ratio&f%'

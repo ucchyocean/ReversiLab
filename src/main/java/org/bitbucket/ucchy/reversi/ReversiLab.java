@@ -13,6 +13,7 @@ import java.util.Random;
 import org.bitbucket.ucchy.reversi.game.GameSession;
 import org.bitbucket.ucchy.reversi.game.GameSessionManager;
 import org.bitbucket.ucchy.reversi.game.PlayerMoveChecker;
+import org.bitbucket.ucchy.reversi.game.PlayerScoreData;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.World;
@@ -68,6 +69,9 @@ public class ReversiLab extends JavaPlugin {
         // チェッカーの起動
         checker = new PlayerMoveChecker();
         checker.start(this);
+
+        // ランキングデータのロード
+        PlayerScoreData.initCache(new File(getDataFolder(), "ranking"));
     }
 
     /**
@@ -168,14 +172,6 @@ public class ReversiLab extends JavaPlugin {
     public GameSessionManager getGameSessionManager() {
         return gameSessionManager;
     }
-
-    /**
-     * ランキングデータマネージャを取得する
-     * @return ランキングデータマネージャ
-     */
-//    public RankingDataManager getRankingManager() {
-//        return ranking;
-//    }
 
     /**
      * このプラグインのJarファイルを返す

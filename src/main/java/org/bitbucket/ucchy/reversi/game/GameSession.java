@@ -320,10 +320,13 @@ public class GameSession {
         int white = board.getWhiteCount();
         int sessionEndWaitSeconds = parent.getReversiLabConfig().getSessionEndWaitSeconds();
         String winner = null;
+        String looser = null;
         if ( black > white ) {
             winner = blackPlayerName;
+            looser = whitePlayerName;
         } else if ( black < white ) {
             winner = whitePlayerName;
+            looser = blackPlayerName;
         }
 
         // メッセージを表示する
@@ -363,6 +366,27 @@ public class GameSession {
         // 引き分けでなければ、花火を発生させる。
         if ( winner != null ) {
             field.spawnFireworks();
+        }
+
+        // ランキングデータに勝敗を加算する
+        if ( winner != null ) {
+            PlayerScoreData winnerScore = PlayerScoreData.getData(winner);
+            winnerScore.increaseGamePlayed();
+            winnerScore.increaseGameWin();
+            winnerScore.save();
+            PlayerScoreData looserScore = PlayerScoreData.getData(looser);
+            looserScore.increaseGamePlayed();
+            looserScore.increaseGameLose();
+            looserScore.save();
+        } else {
+            PlayerScoreData blackScore = PlayerScoreData.getData(blackPlayerName);
+            blackScore.increaseGamePlayed();
+            blackScore.increaseGameDraw();
+            blackScore.save();
+            PlayerScoreData whiteScore = PlayerScoreData.getData(whitePlayerName);
+            whiteScore.increaseGamePlayed();
+            whiteScore.increaseGameDraw();
+            whiteScore.save();
         }
 
         // 15秒後に帰還する

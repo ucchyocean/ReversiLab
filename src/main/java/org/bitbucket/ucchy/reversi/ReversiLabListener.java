@@ -15,6 +15,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.weather.ThunderChangeEvent;
+import org.bukkit.event.weather.WeatherChangeEvent;
 
 /**
  * ReversiLabのリスナークラス
@@ -158,5 +160,32 @@ public class ReversiLabListener implements Listener {
         // チャット発言をログに記録する
         String message = String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage());
         session.log(message);
+    }
+
+
+    /**
+     * 天候（降雨）が変化したときに呼び出されるメソッド
+     * @param event
+     */
+    @EventHandler(priority=EventPriority.NORMAL, ignoreCancelled=true)
+    public void onWeatherChange(WeatherChangeEvent event) {
+
+        // プラグインのワールドで天候が変更した場合に阻止する。
+        if ( event.getWorld().getName().equals(ReversiLab.WORLD_NAME) ) {
+            event.setCancelled(true);
+        }
+    }
+
+    /**
+     * 天候（雷）が変化したときに呼び出されるメソッド
+     * @param event
+     */
+    @EventHandler(priority=EventPriority.NORMAL, ignoreCancelled=true)
+    public void onThunderChange(ThunderChangeEvent event) {
+
+        // プラグインのワールドで天候が変更した場合に阻止する。
+        if ( event.getWorld().getName().equals(ReversiLab.WORLD_NAME) ) {
+            event.setCancelled(true);
+        }
     }
 }

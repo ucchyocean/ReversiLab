@@ -10,6 +10,8 @@ import java.util.List;
 
 import org.bitbucket.ucchy.reversi.game.GameSession;
 import org.bitbucket.ucchy.reversi.game.GameSessionPhase;
+import org.bitbucket.ucchy.reversi.game.PlayerScoreData;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -292,7 +294,76 @@ public class ReversiLabCommand implements TabExecutor {
             return true;
         }
 
-        // TODO 未実装
+        // ランキングデータの取得とソート
+        String title;
+        ArrayList<PlayerScoreData> datas = PlayerScoreData.getAllData();
+        if ( args.length >= 2 && args[1].equalsIgnoreCase("play") ) {
+            PlayerScoreData.sortByGamePlayed(datas);
+            title = Messages.get("RankingTitle", "%type", Messages.get("RankingPlay"));
+        } else if ( args.length >= 2 && args[1].equalsIgnoreCase("played") ) {
+            PlayerScoreData.sortByGamePlayed(datas);
+            title = Messages.get("RankingTitle", "%type", Messages.get("RankingPlay"));
+        } else if ( args.length >= 2 && args[1].equalsIgnoreCase("ratio") ) {
+            PlayerScoreData.sortByRatio(datas);
+            title = Messages.get("RankingTitle", "%type", Messages.get("RankingRatio"));
+        } else if ( args.length >= 2 && args[1].equalsIgnoreCase("lose") ) {
+            PlayerScoreData.sortByGameLose(datas);
+            title = Messages.get("RankingTitle", "%type", Messages.get("RankingLose"));
+        } else {
+            PlayerScoreData.sortByGameWin(datas);
+            title = Messages.get("RankingTitle", "%type", Messages.get("RankingWin"));
+        }
+
+        // 表示
+        sender.sendMessage(title);
+
+        boolean isRankin = false;
+
+        for ( int index=0; index<10; index++ ) {
+
+            if ( index >= datas.size() ) break;
+
+            PlayerScoreData data = datas.get(index);
+
+            boolean isSelf = data.getName().equals(sender.getName());
+            if ( isSelf ) isRankin = true;
+
+            String rank = (isSelf ? ChatColor.RED.toString() : "") +
+                    String.format("%1$2d", (index + 1));
+            String name = String.format("%1$-12s", data.getName());
+            String played = "" + data.getGamePlayed();
+            String win = "" + data.getGameWin();
+            String lose = "" + data.getGameLose();
+            String ratio = String.format("%1$.2f", data.getRatio());
+
+            String line = Messages.get("RankingFormat",
+                    new String[]{"%rank", "%name", "%played", "%win", "%lose", "%ratio"},
+                    new String[]{rank, name, played, win, lose, ratio});
+            sender.sendMessage(line);
+        }
+
+        // 10位以内に入っていないなら、自分のスコアを探して表示する
+        if ( !isRankin ) {
+            for ( int index=10; index<datas.size(); index++ ) {
+                PlayerScoreData data = datas.get(index);
+                if ( data.getName().equals(sender.getName()) ) {
+                    String rank = ChatColor.RED + String.format("%1$2d", (index + 1));
+                    String name = String.format("%1$-12s", data.getName());
+                    String played = "" + data.getGamePlayed();
+                    String win = "" + data.getGameWin();
+                    String lose = "" + data.getGameLose();
+                    String ratio = String.format("%1$.2f", data.getRatio());
+
+                    String line = Messages.get("RankingFormat",
+                            new String[]{"%rank", "%name", "%played", "%win", "%lose", "%ratio"},
+                            new String[]{rank, name, played, win, lose, ratio});
+                    sender.sendMessage(line);
+
+                    break;
+                }
+            }
+        }
+
         return true;
     }
 
