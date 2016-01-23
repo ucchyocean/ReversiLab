@@ -19,7 +19,7 @@ import org.bukkit.entity.Player;
 public class GameSessionManager {
 
     private ReversiLab parent;
-    private HashMap<String, GameSession> sessions;
+    private HashMap<String, VersusGameSession> sessions;
 
     /**
      * コンストラクタ
@@ -27,7 +27,7 @@ public class GameSessionManager {
      */
     public GameSessionManager(ReversiLab parent) {
         this.parent = parent;
-        sessions = new HashMap<String, GameSession>();
+        sessions = new HashMap<String, VersusGameSession>();
     }
 
     /**
@@ -35,8 +35,8 @@ public class GameSessionManager {
      * @param player プレイヤー
      * @return ゲームセッション
      */
-    public GameSession getSession(Player player) {
-        for ( GameSession session : sessions.values() ) {
+    public VersusGameSession getSession(Player player) {
+        for ( VersusGameSession session : sessions.values() ) {
             if ( !session.isEnd() && session.isRelatedPlayer(player.getName()) ) {
                 return session;
             }
@@ -49,7 +49,7 @@ public class GameSessionManager {
      * @param playerName プレイヤー名
      * @return ゲームセッション
      */
-    public GameSession getSession(String playerName) {
+    public VersusGameSession getSession(String playerName) {
         Player player = Utility.getPlayerExact(playerName);
         if ( player == null ) return null;
         return getSession(player);
@@ -60,7 +60,7 @@ public class GameSessionManager {
      * @param player プレイヤー
      */
     public void removeSession(Player player) {
-        GameSession session = getSession(player);
+        VersusGameSession session = getSession(player);
         if ( session != null ) {
             sessions.remove(session);
         }
@@ -70,7 +70,7 @@ public class GameSessionManager {
      * 指定されたゲームセッションを登録削除する
      * @param session ゲームセッション
      */
-    public void removeSession(GameSession session) {
+    public void removeSession(VersusGameSession session) {
         sessions.remove(session.toString());
     }
 
@@ -80,8 +80,8 @@ public class GameSessionManager {
      * @param opponent 対戦者
      * @return 作成されたゲームセッション
      */
-    public GameSession createNewSession(Player owner, Player opponent) {
-        GameSession session = new GameSession(parent, owner.getName(), opponent.getName());
+    public VersusGameSession createNewSession(Player owner, Player opponent) {
+        VersusGameSession session = new VersusGameSession(parent, owner.getName(), opponent.getName());
         sessions.put(session.toString(), session);
         return session;
     }
@@ -99,7 +99,7 @@ public class GameSessionManager {
         while ( size <= 20 ) {
 
             boolean isUsed = false;
-            for ( GameSession session : sessions.values() ) {
+            for ( VersusGameSession session : sessions.values() ) {
                 if ( session.getGrid_x() == x &&
                         session.getGrid_z() == z &&
                         !session.isEnd() ) {
@@ -152,7 +152,7 @@ public class GameSessionManager {
      * 現在のセッションを全て返す
      * @return 全てのセッション
      */
-    public ArrayList<GameSession> getAllSessions() {
-        return new ArrayList<GameSession>(sessions.values());
+    public ArrayList<VersusGameSession> getAllSessions() {
+        return new ArrayList<VersusGameSession>(sessions.values());
     }
 }

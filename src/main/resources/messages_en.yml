@@ -54,3 +54,5 @@ RankingWin: 'Win Count'
 RankingLose: 'Lose Count'
 RankingRatio: 'Win Ratio'
 RankingFormat: '%rank %name&f: &e%played&fplayed, &e%win&fwin, &e%lose&flose, &e%ratio&f%'
+
+NameOfCPU: 'CPU'

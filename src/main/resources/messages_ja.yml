@@ -54,3 +54,5 @@ RankingWin: '勝利数'
 RankingLose: '敗北数'
 RankingRatio: '勝率'
 RankingFormat: '%rank %name&f: &e%played&fplayed, &e%win&fwin, &e%lose&flose, &e%ratio&f%'
+
+NameOfCPU: 'CPU'

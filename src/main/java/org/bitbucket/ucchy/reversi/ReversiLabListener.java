@@ -1,7 +1,7 @@
 package org.bitbucket.ucchy.reversi;
 
 import org.bitbucket.ucchy.reversi.game.CellState;
-import org.bitbucket.ucchy.reversi.game.GameSession;
+import org.bitbucket.ucchy.reversi.game.VersusGameSession;
 import org.bitbucket.ucchy.reversi.game.GameSessionManager;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -47,7 +47,7 @@ public class ReversiLabListener implements Listener {
         Player player = event.getPlayer();
 
         // リバーシの対局参加者でなければ、イベントを無視する。
-        GameSession session = manager.getSession(player);
+        VersusGameSession session = manager.getSession(player);
         if ( session == null ) return;
 
         // この時点で、イベントはキャンセルしておく。
@@ -79,7 +79,7 @@ public class ReversiLabListener implements Listener {
         Player player = event.getPlayer();
 
         // リバーシの対局参加者でなければ、イベントを無視する。
-        GameSession session = manager.getSession(player);
+        VersusGameSession session = manager.getSession(player);
         if ( session == null ) return;
 
         // イベントをキャンセルする。
@@ -99,7 +99,7 @@ public class ReversiLabListener implements Listener {
         Player player = (Player)event.getEntity();
 
         // リバーシの対局参加者でなければ、イベントを無視する。
-        GameSession session = manager.getSession(player);
+        VersusGameSession session = manager.getSession(player);
         if ( session == null ) return;
 
         // イベントをキャンセルして、すべてのダメージを無効化する。
@@ -114,7 +114,7 @@ public class ReversiLabListener implements Listener {
     public void onPlayerDropItem(PlayerDropItemEvent event) {
 
         // リバーシの対局参加者でなければ、イベントを無視する。
-        GameSession session = manager.getSession(event.getPlayer());
+        VersusGameSession session = manager.getSession(event.getPlayer());
         if ( session == null ) return;
 
         // イベントをキャンセルして、すべてのアイテムドロップをキャンセルし、
@@ -129,7 +129,7 @@ public class ReversiLabListener implements Listener {
     @EventHandler(priority=EventPriority.NORMAL, ignoreCancelled=true)
     public void onPlayerJoin(PlayerJoinEvent event) {
 
-        GameSession session = manager.getSession(event.getPlayer());
+        VersusGameSession session = manager.getSession(event.getPlayer());
         if ( event.getPlayer().getWorld().getName().equals(ReversiLab.WORLD_NAME) ) {
 
             if ( session == null || session.isEnd() ) {
@@ -154,7 +154,7 @@ public class ReversiLabListener implements Listener {
     public void onPlayerChat(AsyncPlayerChatEvent event) {
 
         // リバーシの対局参加者でなければ、イベントを無視する。
-        GameSession session = manager.getSession(event.getPlayer());
+        VersusGameSession session = manager.getSession(event.getPlayer());
         if ( session == null ) return;
 
         // チャット発言をログに記録する
