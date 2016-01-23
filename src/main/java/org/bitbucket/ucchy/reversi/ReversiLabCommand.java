@@ -125,6 +125,12 @@ public class ReversiLabCommand implements TabExecutor {
             return true;
         }
 
+        // 禁止ワールドに居る場合はエラー
+        if ( parent.getReversiLabConfig().getProhibitWorlds().contains(player.getWorld().getName()) ) {
+            sendErrorMessage(sender, Messages.get("ErrorProhibitWorlds"));
+            return true;
+        }
+
         // ゲームセッションを作成する
         parent.getGameSessionManager().createNewSession(player, target);
 
@@ -156,6 +162,27 @@ public class ReversiLabCommand implements TabExecutor {
         // フェーズがINVITATIONで無い場合はエラー
         if ( session.getPhase() != GameSessionPhase.INVITATION ) {
             sendErrorMessage(sender, Messages.get("ErrorNotFoundVersusSession"));
+            return true;
+        }
+
+        // 禁止ワールドに居る場合はエラー
+        if ( parent.getReversiLabConfig().getProhibitWorlds().contains(player.getWorld().getName()) ) {
+            sendErrorMessage(sender, Messages.get("ErrorProhibitWorlds"));
+            return true;
+        }
+
+        // オーナーがオフラインの場合は、対戦をキャンセルする。
+        Player owner = session.getOwnerPlayer();
+        if ( owner == null || !owner.isOnline() ) {
+            session.runCancel();
+            sendErrorMessage(sender, Messages.get("ErrorOwnerIsOffline", "%owner", session.getOwnerName()));
+            return true;
+        }
+
+        // オーナーが禁止ワールドに移動した場合は、対戦をキャンセルする。
+        if ( parent.getReversiLabConfig().getProhibitWorlds().contains(owner.getWorld().getName()) ) {
+            session.runCancel();
+            sendErrorMessage(sender, Messages.get("ErrorOwnerInProhibitWorlds", "%owner", session.getOwnerName()));
             return true;
         }
 

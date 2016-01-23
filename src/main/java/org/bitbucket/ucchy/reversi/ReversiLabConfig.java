@@ -6,6 +6,7 @@
 package org.bitbucket.ucchy.reversi;
 
 import java.io.File;
+import java.util.List;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -20,6 +21,9 @@ public class ReversiLabConfig {
 
     /** 対戦の開始と終了を、サーバー全体メッセージで通知するかどうか */
     private boolean broadcastSessionStartEnd;
+
+    /** ゲームの開始を禁止するワールド */
+    private List<String> prohibitWorlds;
 
     /** ゲーム終了してから、テレポートして元の場所に戻るまでの、待ち時間（秒） */
     private int sessionEndWaitSeconds;
@@ -60,6 +64,7 @@ public class ReversiLabConfig {
         // 読み込み
         lang = conf.getString("lang", Utility.getDefaultLocaleLanguage());
         broadcastSessionStartEnd = conf.getBoolean("broadcastSessionStartEnd", true);
+        prohibitWorlds = conf.getStringList("prohibitWorlds");
         sessionEndWaitSeconds = conf.getInt("sessionEndWaitSeconds", 15);
     }
 
@@ -69,6 +74,10 @@ public class ReversiLabConfig {
 
     public boolean isBroadcastSessionStartEnd() {
         return broadcastSessionStartEnd;
+    }
+
+    public List<String> getProhibitWorlds() {
+        return prohibitWorlds;
     }
 
     public int getSessionEndWaitSeconds() {

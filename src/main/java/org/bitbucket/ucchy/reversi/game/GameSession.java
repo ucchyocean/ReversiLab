@@ -148,12 +148,12 @@ public class GameSession {
         opponent.teleport(opponentStartLoc, TeleportCause.PLUGIN);
 
         // 飛行状態に変更する、ゲームモードはSURVIVALにする
+        owner.setGameMode(GameMode.SURVIVAL);
         owner.setAllowFlight(true);
         owner.setFlying(true);
-        owner.setGameMode(GameMode.SURVIVAL);
+        opponent.setGameMode(GameMode.SURVIVAL);
         opponent.setAllowFlight(true);
         opponent.setFlying(true);
-        opponent.setGameMode(GameMode.SURVIVAL);
 
         // プレイヤーの身ぐるみを剥がす
         tempStorage = new TemporaryStorage();

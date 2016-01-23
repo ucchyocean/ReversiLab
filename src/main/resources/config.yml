@@ -10,5 +10,9 @@ lang: 'en'
 # Send session start and end notification message as server broadcast.
 broadcastSessionStartEnd: true
 
+# The worlds that player cannot start the reversi game session.
+# ex) prohibitWorlds: ['skyblock']
+prohibitWorlds: []
+
 # The wait seconds, from session ends, to teleport back.
 sessionEndWaitSeconds: 15
