@@ -32,6 +32,16 @@ public class GameBoard {
     }
 
     /**
+     * このボードのクローンを作成して返す
+     * @see java.lang.Object#clone()
+     */
+    public GameBoard clone() {
+        GameBoard clone = new GameBoard();
+        clone.board = this.board.clone();
+        return clone;
+    }
+
+    /**
      * 何も置かれていないマス目の個数を返す
      * @return 何も置かれていないマス目の個数
      */
@@ -64,6 +74,9 @@ public class GameBoard {
      */
     public ArrayList<int[]> findPath(int x, int y, CellState state) {
         ArrayList<int[]> results = new ArrayList<int[]>();
+        if ( board[y][x] != CellState.EMPTY ) {
+            return results;
+        }
         results.addAll(findPath(x, y, state, -1, -1));
         results.addAll(findPath(x, y, state, -1, 0));
         results.addAll(findPath(x, y, state, -1, 1));
@@ -158,7 +171,7 @@ public class GameBoard {
      * @param state 状態
      * @return 個数
      */
-    private int getCountOf(CellState state) {
+    public int getCountOf(CellState state) {
         int count = 0;
         for ( CellState[] line : board ) {
             for ( CellState cell : line ) {

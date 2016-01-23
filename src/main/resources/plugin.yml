@@ -9,6 +9,7 @@ commands:
     description: Commands of ${project.name}
     aliases: [rev]
     usage: |
+           /<command> single [easy|normal|hard] - Start a single reversi game.
            /<command> versus (player name) - Send a match request to the specified player.
            /<command> accept - Accept the match request.
            /<command> deny - Deny the match request.
@@ -22,6 +23,9 @@ commands:
 permissions:
   reversilab.command:
     description: Permission of command.
+    default: true
+  reversilab.single:
+    description: Permission of single command.
     default: true
   reversilab.versus:
     description: Permission of versus command.
@@ -49,6 +53,7 @@ permissions:
     description: All of permissions.
     children:
       reversilab.command: true
+      reversilab.single: true
       reversilab.versus: true
       reversilab.accept: true
       reversilab.deny: true

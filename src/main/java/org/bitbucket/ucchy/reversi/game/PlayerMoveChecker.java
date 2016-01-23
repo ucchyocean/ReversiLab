@@ -24,7 +24,7 @@ public class PlayerMoveChecker extends BukkitRunnable {
     public void run() {
 
         GameSessionManager manager = ReversiLab.getInstance().getGameSessionManager();
-        for ( VersusGameSession session : manager.getAllSessions() ) {
+        for ( GameSession session : manager.getAllSessions() ) {
             if ( session.getPhase() != GameSessionPhase.IN_GAME ) {
                 continue;
             }

@@ -8,9 +8,10 @@ package org.bitbucket.ucchy.reversi;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bitbucket.ucchy.reversi.game.VersusGameSession;
-import org.bitbucket.ucchy.reversi.game.GameSessionPhase;
+import org.bitbucket.ucchy.reversi.game.GameSession;
 import org.bitbucket.ucchy.reversi.game.PlayerScoreData;
+import org.bitbucket.ucchy.reversi.game.SingleGameDifficulty;
+import org.bitbucket.ucchy.reversi.game.VersusGameSession;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -44,7 +45,9 @@ public class ReversiLabCommand implements TabExecutor {
             return false;
         }
 
-        if ( args[0].equalsIgnoreCase("versus") ) {
+        if ( args[0].equalsIgnoreCase("single") ) {
+            return doSingle(sender, command, label, args);
+        } else if ( args[0].equalsIgnoreCase("versus") ) {
             return doVersus(sender, command, label, args);
         } else if ( args[0].equalsIgnoreCase("accept") ) {
             return doAccept(sender, command, label, args);
@@ -84,6 +87,50 @@ public class ReversiLabCommand implements TabExecutor {
         return null;
     }
 
+    private boolean doSingle(CommandSender sender, Command command, String label, String[] args) {
+
+        // パーミッションのチェック
+        if ( !sender.hasPermission(PERMISSION + "versus") ) {
+            sendErrorMessage(sender, Messages.get("ErrorNotHavePermission"));
+            return true;
+        }
+
+        // Playerでないならエラー
+        if ( !(sender instanceof Player) ) {
+            sendErrorMessage(sender, Messages.get("ErrorNotPlayer"));
+            return true;
+        }
+
+        Player player = (Player)sender;
+        SingleGameDifficulty difficulty = SingleGameDifficulty.NORMAL;
+
+        // 難易度指定の取得
+        if ( args.length >= 2 ) {
+            if ( args[1].equalsIgnoreCase("easy") ) {
+                difficulty = SingleGameDifficulty.EASY;
+            } else if ( args[1].equalsIgnoreCase("hard") ) {
+                difficulty = SingleGameDifficulty.HARD;
+            }
+        }
+
+        // 既にセッションに居る場合はエラー
+        if ( parent.getGameSessionManager().getSession(player) != null ) {
+            sendErrorMessage(sender, Messages.get("ErrorYouAreInGame"));
+            return true;
+        }
+
+        // 禁止ワールドに居る場合はエラー
+        if ( parent.getReversiLabConfig().getProhibitWorlds().contains(player.getWorld().getName()) ) {
+            sendErrorMessage(sender, Messages.get("ErrorProhibitWorlds"));
+            return true;
+        }
+
+        // ゲームセッションを作成する
+        parent.getGameSessionManager().createNewSingleGameSession(player, difficulty);
+
+        return true;
+    }
+
     private boolean doVersus(CommandSender sender, Command command, String label, String[] args) {
 
         // パーミッションのチェック
@@ -119,6 +166,12 @@ public class ReversiLabCommand implements TabExecutor {
             return true;
         }
 
+        // 既にセッションに居る場合はエラー
+        if ( parent.getGameSessionManager().getSession(player) != null ) {
+            sendErrorMessage(sender, Messages.get("ErrorYouAreInGame"));
+            return true;
+        }
+
         // 指定されたプレイヤーが既に対戦中の場合はエラー
         if ( parent.getGameSessionManager().getSession(target) != null ) {
             sendErrorMessage(sender, Messages.get("ErrorTargetIsInGame"));
@@ -132,7 +185,7 @@ public class ReversiLabCommand implements TabExecutor {
         }
 
         // ゲームセッションを作成する
-        parent.getGameSessionManager().createNewSession(player, target);
+        parent.getGameSessionManager().createNewVersusGameSession(player, target);
 
         return true;
     }
@@ -153,14 +206,8 @@ public class ReversiLabCommand implements TabExecutor {
 
         // 対戦を受けたセッションが無い場合はエラー
         Player player = (Player)sender;
-        VersusGameSession session = parent.getGameSessionManager().getSession(player);
-        if ( session == null || !session.isOpponent(player.getName()) ) {
-            sendErrorMessage(sender, Messages.get("ErrorNotFoundVersusSession"));
-            return true;
-        }
-
-        // フェーズがINVITATIONで無い場合はエラー
-        if ( session.getPhase() != GameSessionPhase.INVITATION ) {
+        VersusGameSession session = parent.getGameSessionManager().getInvitedSession(player);
+        if ( session == null ) {
             sendErrorMessage(sender, Messages.get("ErrorNotFoundVersusSession"));
             return true;
         }
@@ -208,14 +255,8 @@ public class ReversiLabCommand implements TabExecutor {
 
         // 対戦を受けたセッションが無い場合はエラー
         Player player = (Player)sender;
-        VersusGameSession session = parent.getGameSessionManager().getSession(player);
+        VersusGameSession session = parent.getGameSessionManager().getInvitedSession(player);
         if ( session == null || !session.isOpponent(player.getName()) ) {
-            sendErrorMessage(sender, Messages.get("ErrorNotFoundVersusSession"));
-            return true;
-        }
-
-        // フェーズがINVITATIONで無い場合はエラー
-        if ( session.getPhase() != GameSessionPhase.INVITATION ) {
             sendErrorMessage(sender, Messages.get("ErrorNotFoundVersusSession"));
             return true;
         }
@@ -240,9 +281,9 @@ public class ReversiLabCommand implements TabExecutor {
             return true;
         }
 
-        // オーナーのセッションが無い場合はエラー
+        // セッションが無い場合はエラー
         Player player = (Player)sender;
-        VersusGameSession session = parent.getGameSessionManager().getSession(player);
+        GameSession session = parent.getGameSessionManager().getSession(player);
         if ( session == null ) {
             sendErrorMessage(sender, Messages.get("ErrorNotFoundSession"));
             return true;
@@ -275,12 +316,12 @@ public class ReversiLabCommand implements TabExecutor {
         }
 
         Player player = (Player)sender;
-        VersusGameSession mySession = parent.getGameSessionManager().getSession(player);
+        GameSession mySession = parent.getGameSessionManager().getSession(player);
         if ( mySession != null && !mySession.isEnd() ) {
             // 既にセッションに参加している場合
 
             // セッションの観客ではなく、プレイヤーである場合
-            if ( mySession.isOwner(player.getName()) || mySession.isOpponent(player.getName()) ) {
+            if ( mySession.isPlayer(player.getName()) ) {
                 sendErrorMessage(sender, Messages.get("ErrorJoinedSessionAlready"));
                 return true;
             }
@@ -300,7 +341,7 @@ public class ReversiLabCommand implements TabExecutor {
             }
 
             // 指定されたプレイヤー名に関連するセッションが見つからないならエラー
-            VersusGameSession targetSession = parent.getGameSessionManager().getSession(args[1]);
+            GameSession targetSession = parent.getGameSessionManager().getSession(args[1]);
             if ( targetSession == null ) {
                 sendErrorMessage(sender, Messages.get("ErrorSpectatorInvalidArgument"));
                 return true;

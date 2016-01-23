@@ -20,6 +20,7 @@ import org.bukkit.entity.Firework;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 /**
  * ゲームフィールド
@@ -29,6 +30,10 @@ public class GameField {
 
     private Location origin;
     private Location center;
+
+    private Location primaryPlayerLocation;
+    private Location secondaryPlayerLocation;
+
     private ArmorStand[][] stands;
 
     /**
@@ -38,16 +43,16 @@ public class GameField {
     protected GameField(Location origin) {
         this.origin = origin;
         this.center = origin.clone().add(4, 0, 4);
-        makeField();
+        //makeField();
     }
 
     /**
      * フィールドを生成する
      */
-    private void makeField() {
+    protected void makeField() {
 
         // クリーンアップ
-        cleanup();
+        cleanup(true);
 
         int startx = origin.getBlockX();
         int startz = origin.getBlockZ();
@@ -67,6 +72,12 @@ public class GameField {
         putStone(3, 4, CellState.WHITE);
         putStone(4, 3, CellState.WHITE);
         putStone(4, 4, CellState.BLACK);
+
+        // プレイヤーの開始位置を設定
+        this.primaryPlayerLocation = origin.clone().add(4, 5, -1)
+                .setDirection(new Vector(0, -5, 5).normalize());
+        this.secondaryPlayerLocation = origin.clone().add(4, 5, 8)
+                .setDirection(new Vector(0, -5, -5).normalize());
     }
 
     /**
@@ -85,7 +96,7 @@ public class GameField {
                     origin.getBlockZ() + y + 0.5);
 
             ArmorStand stand = (ArmorStand)origin.getWorld().spawnEntity(loc, EntityType.ARMOR_STAND);
-            stand.setMarker(true);
+            //stand.setMarker(true);
             stand.setGravity(false);
             stand.setSmall(true);
             stand.setVisible(false);
@@ -110,8 +121,9 @@ public class GameField {
 
     /**
      * 領域をクリーンアップする
+     * @param cleanupEntities エンティティをクリアするかどうか
      */
-    protected void cleanup() {
+    protected void cleanup(boolean cleanupEntities) {
 
         int startx = origin.getBlockX();
         int startz = origin.getBlockZ();
@@ -127,11 +139,15 @@ public class GameField {
                 }
             }
         }
-        for ( Entity entity : world.getEntities() ) {
-            Location loc = entity.getLocation();
-            if ( startx-32 <= loc.getBlockX() && loc.getBlockX() <= startx+32 &&
-                    startz-32 <= loc.getBlockZ() && loc.getBlockZ() <= startz+32 ) {
-                entity.remove();
+
+        // エンティティをクリア
+        if ( cleanupEntities ) {
+            for ( Entity entity : world.getEntities() ) {
+                Location loc = entity.getLocation();
+                if ( startx-32 <= loc.getBlockX() && loc.getBlockX() <= startx+32 &&
+                        startz-32 <= loc.getBlockZ() && loc.getBlockZ() <= startz+32 ) {
+                    entity.remove();
+                }
             }
         }
     }
@@ -150,6 +166,22 @@ public class GameField {
      */
     protected Location getCenterRespawnPoint() {
         return center.clone().add(0, 2, 0);
+    }
+
+    /**
+     * 第一プレイヤーの開始地点を返す
+     * @return primaryPlayerLocation
+     */
+    protected Location getPrimaryPlayerLocation() {
+        return primaryPlayerLocation;
+    }
+
+    /**
+     * 第二プレイヤーの開始地点を返す
+     * @return secondaryPlayerLocation
+     */
+    protected Location getSecondaryPlayerLocation() {
+        return secondaryPlayerLocation;
     }
 
     /**

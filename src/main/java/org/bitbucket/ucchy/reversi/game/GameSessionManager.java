@@ -19,7 +19,7 @@ import org.bukkit.entity.Player;
 public class GameSessionManager {
 
     private ReversiLab parent;
-    private HashMap<String, VersusGameSession> sessions;
+    private HashMap<String, GameSession> sessions;
 
     /**
      * コンストラクタ
@@ -27,7 +27,7 @@ public class GameSessionManager {
      */
     public GameSessionManager(ReversiLab parent) {
         this.parent = parent;
-        sessions = new HashMap<String, VersusGameSession>();
+        sessions = new HashMap<String, GameSession>();
     }
 
     /**
@@ -35,11 +35,27 @@ public class GameSessionManager {
      * @param player プレイヤー
      * @return ゲームセッション
      */
-    public VersusGameSession getSession(Player player) {
-        for ( VersusGameSession session : sessions.values() ) {
+    public GameSession getSession(Player player) {
+        for ( GameSession session : sessions.values() ) {
             if ( !session.isEnd() && session.isRelatedPlayer(player.getName()) ) {
                 return session;
             }
+        }
+        return null;
+    }
+
+    /**
+     * 指定したプレイヤーが招待されているゲームセッションを取得する
+     * @param player プレイヤー
+     * @return ゲームセッション
+     */
+    public VersusGameSession getInvitedSession(Player player) {
+        for ( GameSession session : sessions.values() ) {
+            if ( session.isEnd() ) continue;
+            if ( session.getPhase() != GameSessionPhase.INVITATION ) continue;
+            if ( !(session instanceof VersusGameSession) ) continue;
+            VersusGameSession vsession = (VersusGameSession)session;
+            if ( vsession.isOpponent(player.getName()) ) return vsession;
         }
         return null;
     }
@@ -49,7 +65,7 @@ public class GameSessionManager {
      * @param playerName プレイヤー名
      * @return ゲームセッション
      */
-    public VersusGameSession getSession(String playerName) {
+    public GameSession getSession(String playerName) {
         Player player = Utility.getPlayerExact(playerName);
         if ( player == null ) return null;
         return getSession(player);
@@ -60,9 +76,9 @@ public class GameSessionManager {
      * @param player プレイヤー
      */
     public void removeSession(Player player) {
-        VersusGameSession session = getSession(player);
+        GameSession session = getSession(player);
         if ( session != null ) {
-            sessions.remove(session);
+            removeSession(session);
         }
     }
 
@@ -70,8 +86,20 @@ public class GameSessionManager {
      * 指定されたゲームセッションを登録削除する
      * @param session ゲームセッション
      */
-    public void removeSession(VersusGameSession session) {
+    public void removeSession(GameSession session) {
         sessions.remove(session.toString());
+    }
+
+    /**
+     * 新しいゲームセッションを作成する
+     * @param owner オーナー
+     * @param difficulty 難易度
+     * @return 作成されたゲームセッション
+     */
+    public SingleGameSession createNewSingleGameSession(Player owner, SingleGameDifficulty difficulty) {
+        SingleGameSession session = new SingleGameSession(parent, owner.getName(), difficulty);
+        sessions.put(session.toString(), session);
+        return session;
     }
 
     /**
@@ -80,7 +108,7 @@ public class GameSessionManager {
      * @param opponent 対戦者
      * @return 作成されたゲームセッション
      */
-    public VersusGameSession createNewSession(Player owner, Player opponent) {
+    public VersusGameSession createNewVersusGameSession(Player owner, Player opponent) {
         VersusGameSession session = new VersusGameSession(parent, owner.getName(), opponent.getName());
         sessions.put(session.toString(), session);
         return session;
@@ -99,7 +127,7 @@ public class GameSessionManager {
         while ( size <= 20 ) {
 
             boolean isUsed = false;
-            for ( VersusGameSession session : sessions.values() ) {
+            for ( GameSession session : sessions.values() ) {
                 if ( session.getGrid_x() == x &&
                         session.getGrid_z() == z &&
                         !session.isEnd() ) {
@@ -145,14 +173,14 @@ public class GameSessionManager {
         }
 
         return new int[]{20, 0};
-        // 同時に840人が遊んでいるなら、この値が返されるが、まずそんなことはない。
+        // 同時に420人が遊んでいるなら、この値が返されるが、まずそんなことはない。
     }
 
     /**
      * 現在のセッションを全て返す
      * @return 全てのセッション
      */
-    public ArrayList<VersusGameSession> getAllSessions() {
-        return new ArrayList<VersusGameSession>(sessions.values());
+    public ArrayList<GameSession> getAllSessions() {
+        return new ArrayList<GameSession>(sessions.values());
     }
 }

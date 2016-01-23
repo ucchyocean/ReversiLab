@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.bitbucket.ucchy.reversi.game.VersusGameSession;
+import org.bitbucket.ucchy.reversi.game.GameSession;
 import org.bitbucket.ucchy.reversi.game.GameSessionManager;
 import org.bitbucket.ucchy.reversi.game.PlayerMoveChecker;
 import org.bitbucket.ucchy.reversi.game.PlayerScoreData;
@@ -89,8 +89,8 @@ public class ReversiLab extends JavaPlugin {
     public void onDisable() {
 
         // ゲーム中のセッションがある場合、全てキャンセルする
-        ArrayList<VersusGameSession> sessions = new ArrayList<VersusGameSession>(gameSessionManager.getAllSessions());
-        for ( VersusGameSession session : sessions ) {
+        ArrayList<GameSession> sessions = new ArrayList<GameSession>(gameSessionManager.getAllSessions());
+        for ( GameSession session : sessions ) {
             if ( !session.isEnd() ) {
                 session.runCancel();
             }
