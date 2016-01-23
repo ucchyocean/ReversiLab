@@ -747,4 +747,13 @@ public class GameSession {
         String prefix = Messages.get("PrefixInformation");
         Bukkit.broadcastMessage(prefix + message);
     }
+
+    /**
+     * このセッションの文字列表現
+     * @see java.lang.Object#toString()
+     */
+    public String toString() {
+        return String.format("%s{owner=%s,opponent=%s}",
+                this.getClass().getSimpleName(), ownerName, opponentName);
+    }
 }

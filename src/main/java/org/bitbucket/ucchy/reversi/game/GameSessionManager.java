@@ -6,6 +6,7 @@
 package org.bitbucket.ucchy.reversi.game;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.bitbucket.ucchy.reversi.ReversiLab;
 import org.bitbucket.ucchy.reversi.Utility;
@@ -18,7 +19,7 @@ import org.bukkit.entity.Player;
 public class GameSessionManager {
 
     private ReversiLab parent;
-    private ArrayList<GameSession> sessions;
+    private HashMap<String, GameSession> sessions;
 
     /**
      * コンストラクタ
@@ -26,7 +27,7 @@ public class GameSessionManager {
      */
     public GameSessionManager(ReversiLab parent) {
         this.parent = parent;
-        sessions = new ArrayList<GameSession>();
+        sessions = new HashMap<String, GameSession>();
     }
 
     /**
@@ -35,7 +36,7 @@ public class GameSessionManager {
      * @return ゲームセッション
      */
     public GameSession getSession(Player player) {
-        for ( GameSession session : sessions ) {
+        for ( GameSession session : sessions.values() ) {
             if ( !session.isEnd() && session.isRelatedPlayer(player.getName()) ) {
                 return session;
             }
@@ -70,9 +71,7 @@ public class GameSessionManager {
      * @param session ゲームセッション
      */
     public void removeSession(GameSession session) {
-        if ( sessions.contains(session) ) {
-            sessions.remove(session);
-        }
+        sessions.remove(session.toString());
     }
 
     /**
@@ -83,7 +82,7 @@ public class GameSessionManager {
      */
     public GameSession createNewSession(Player owner, Player opponent) {
         GameSession session = new GameSession(parent, owner.getName(), opponent.getName());
-        sessions.add(session);
+        sessions.put(session.toString(), session);
         return session;
     }
 
@@ -100,7 +99,7 @@ public class GameSessionManager {
         while ( size <= 20 ) {
 
             boolean isUsed = false;
-            for ( GameSession session : sessions ) {
+            for ( GameSession session : sessions.values() ) {
                 if ( session.getGrid_x() == x &&
                         session.getGrid_z() == z &&
                         !session.isEnd() ) {
@@ -154,6 +153,6 @@ public class GameSessionManager {
      * @return 全てのセッション
      */
     public ArrayList<GameSession> getAllSessions() {
-        return sessions;
+        return new ArrayList<GameSession>(sessions.values());
     }
 }
