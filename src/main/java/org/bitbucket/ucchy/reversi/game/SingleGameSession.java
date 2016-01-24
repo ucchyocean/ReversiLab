@@ -142,27 +142,27 @@ public class SingleGameSession extends GameSession {
         setPhase(GameSessionPhase.IN_GAME);
 
         // 先攻のターン
-        runPreTurn(CellState.BLACK);
+        runPreTurn(Piece.BLACK);
     }
 
     /**
      * 手番を開始する。
-     * @param state 黒または白
+     * @param piece 黒または白
      */
-    private void runPreTurn(final CellState state) {
+    private void runPreTurn(final Piece piece) {
 
-        this.turn = (state == CellState.BLACK) ? GameSessionTurn.BLACK_PRE : GameSessionTurn.WHITE_PRE;
+        this.turn = (piece == Piece.BLACK) ? GameSessionTurn.BLACK_PRE : GameSessionTurn.WHITE_PRE;
 
         boolean isPlayerTurn =
-                (state == CellState.BLACK && isOwnerBlack)  || (state == CellState.WHITE && !isOwnerBlack);
+                (piece == Piece.BLACK && isOwnerBlack)  || (piece == Piece.WHITE && !isOwnerBlack);
 
         Player owner = Utility.getPlayerExact(ownerName);
 
         // 石を置けることを確認する。置けないならパスを行う。
-        if ( !getBoard().canPut(state) ) {
+        if ( !getBoard().canPut(piece) ) {
             String name = isPlayerTurn ? ownerName : Messages.get("NameOfCPU");
             sendInfoMessageAll(Messages.get("InformationAutoPass", "%player", name));
-            runPreTurn(state.getReverse());
+            runPreTurn(piece.getReverse());
             return;
         }
 
@@ -171,7 +171,7 @@ public class SingleGameSession extends GameSession {
             TitleDisplayComponent.display(owner, Messages.get("InformationYourTurn"), 10, 50, 20);
         }
 
-        this.turn = (state == CellState.BLACK) ? GameSessionTurn.BLACK : GameSessionTurn.WHITE;
+        this.turn = (piece == Piece.BLACK) ? GameSessionTurn.BLACK : GameSessionTurn.WHITE;
 
         // CPUが石を置く
         if ( !isPlayerTurn ) {
@@ -183,7 +183,7 @@ public class SingleGameSession extends GameSession {
                 public void run() {
 
                     // 次に置く座標を取得
-                    final int[] next = ai.getNext(getBoard(), state);
+                    final int[] next = ai.getNext(getBoard(), piece);
 
                     long cpuTimeMillis = System.currentTimeMillis() - startTime;
 
@@ -197,7 +197,7 @@ public class SingleGameSession extends GameSession {
 
                     new BukkitRunnable() {
                         public void run() {
-                            tryPut(next[0], next[1], state);
+                            tryPut(next[0], next[1], piece);
                         }
                     }.runTaskLater(parent, ticks);
                 }
@@ -208,9 +208,9 @@ public class SingleGameSession extends GameSession {
     /**
      * 指定した座標に石を置いてみる。
      * @param location 座標
-     * @param state 置く石の種類
+     * @param piece 置く石の種類
      */
-    public void tryPut(Location location, final CellState state) {
+    public void tryPut(Location location, final Piece piece) {
 
         int xOffset = location.getBlockX() - getField().getOrigin().getBlockX();
         int zOffset = location.getBlockZ() - getField().getOrigin().getBlockZ();
@@ -222,37 +222,37 @@ public class SingleGameSession extends GameSession {
             return;
         }
 
-        tryPut(xOffset, zOffset, state);
+        tryPut(xOffset, zOffset, piece);
     }
 
     /**
      * 指定した座標に石を置いてみる。
      * @param x マス目のx座標
      * @param y マス目のy座標
-     * @param state 置く石の種類
+     * @param piece 置く石の種類
      */
-    private void tryPut(int x, int y, final CellState state) {
+    private void tryPut(int x, int y, final Piece piece) {
 
         // 手番でなければ、エラーメッセージを表示する。
-        if ( state == CellState.BLACK && turn != GameSessionTurn.BLACK ) {
+        if ( piece == Piece.BLACK && turn != GameSessionTurn.BLACK ) {
             sendErrorMessage(ownerName, Messages.get("ErrorNotYourTurn"));
             return;
         }
-        if ( state == CellState.WHITE && turn != GameSessionTurn.WHITE ) {
+        if ( piece == Piece.WHITE && turn != GameSessionTurn.WHITE ) {
             sendErrorMessage(ownerName, Messages.get("ErrorNotYourTurn"));
             return;
         }
 
         // 置ける場所なのかどうかを確認する。置けないならエラーメッセージを表示する。
-        if ( !getBoard().canPutAt(x, y, state) ) {
+        if ( !getBoard().canPutAt(x, y, piece) ) {
             sendErrorMessage(ownerName, Messages.get("ErrorCannotPut"));
             return;
         }
 
         // 実際に置く。
-        this.turn = (state == CellState.BLACK) ? GameSessionTurn.BLACK_POST : GameSessionTurn.WHITE_POST;
-        final ArrayList<int[]> reverses = getBoard().putAt(x, y, state);
-        getField().putStone(x, y, state);
+        this.turn = (piece == Piece.BLACK) ? GameSessionTurn.BLACK_POST : GameSessionTurn.WHITE_POST;
+        final ArrayList<int[]> reverses = getBoard().putAt(x, y, piece);
+        getField().putStone(x, y, piece);
 
         // 演出のために、1つ1つ遅延をかけてひっくり返す
         new BukkitRunnable() {
@@ -260,7 +260,7 @@ public class SingleGameSession extends GameSession {
             public void run() {
                 if ( index < reverses.size() ) {
                     int[] coodinate = reverses.get(index);
-                    getField().putStone(coodinate[0], coodinate[1], state);
+                    getField().putStone(coodinate[0], coodinate[1], piece);
                 } else {
                     cancel();
 
@@ -269,7 +269,7 @@ public class SingleGameSession extends GameSession {
                     if ( !getBoard().canPutAll() ) {
                         runEnd();
                     } else {
-                        runPreTurn(state.getReverse());
+                        runPreTurn(piece.getReverse());
                     }
                 }
                 index++;

@@ -5,7 +5,7 @@
  */
 package org.bitbucket.ucchy.reversi.ai;
 
-import org.bitbucket.ucchy.reversi.game.CellState;
+import org.bitbucket.ucchy.reversi.game.Piece;
 import org.bitbucket.ucchy.reversi.game.GameBoard;
 import org.bitbucket.ucchy.reversi.game.SingleGameDifficulty;
 
@@ -19,5 +19,5 @@ public interface ReversiAI {
     public SingleGameDifficulty getDifficulty();
 
     /** 次に置く場所を返す */
-    public int[] getNext(GameBoard board, CellState state);
+    public int[] getNext(GameBoard board, Piece piece);
 }

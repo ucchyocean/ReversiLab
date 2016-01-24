@@ -309,7 +309,7 @@ public abstract class GameSession {
     /**
      * 指定した座標に石を置いてみる。
      * @param location 座標
-     * @param state 置く石の種類
+     * @param piece 置く石の種類
      */
-    public abstract void tryPut(Location location, final CellState state);
+    public abstract void tryPut(Location location, final Piece piece);
 }

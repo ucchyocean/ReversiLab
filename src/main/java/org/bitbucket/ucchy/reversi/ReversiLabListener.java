@@ -1,6 +1,6 @@
 package org.bitbucket.ucchy.reversi;
 
-import org.bitbucket.ucchy.reversi.game.CellState;
+import org.bitbucket.ucchy.reversi.game.Piece;
 import org.bitbucket.ucchy.reversi.game.GameSession;
 import org.bitbucket.ucchy.reversi.game.GameSessionManager;
 import org.bukkit.GameMode;
@@ -53,17 +53,17 @@ public class ReversiLabListener implements Listener {
         // この時点で、イベントはキャンセルしておく。
         event.setCancelled(true);
 
-        CellState state;
+        Piece piece;
         if ( event.getBlock().getType() == Material.NETHER_BRICK ) {
-            state = CellState.BLACK;
+            piece = Piece.BLACK;
         } else if ( event.getBlock().getType() == Material.QUARTZ_BLOCK ) {
-            state = CellState.WHITE;
+            piece = Piece.WHITE;
         } else {
             return;
         }
 
         // 石を置いてみる
-        session.tryPut(event.getBlock().getLocation(), state);
+        session.tryPut(event.getBlock().getLocation(), piece);
     }
 
     /**

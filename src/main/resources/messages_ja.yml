@@ -46,11 +46,11 @@ ErrorOwnerInProhibitWorlds: '%ownerさんが、リバーシ対戦禁止ワール
 ErrorOwnerIsOffline: '%ownerさんがオフラインになったため、リバーシ対戦がキャンセルされました。'
 
 BroadcastSessionStart: '&6%owner 対 %opponent のリバーシ対戦が開始しました！'
-BroadcastSessionEnd: '&6%owner 対 %opponent のリバーシ対戦が終了しました！%black 対 %white で、%winnerさんの勝利です！'
-BroadcastSessionEndDraw: '&6%owner 対 %opponent のリバーシ対戦が終了しました！%black 対 %white で、引き分けです！'
+BroadcastSessionEnd: '&6%owner 対 %opponent のリバーシ対戦が終了しました！\n%black 対 %white で、%winnerさんの勝利です！'
+BroadcastSessionEndDraw: '&6%owner 対 %opponent のリバーシ対戦が終了しました！\n%black 対 %white で、引き分けです！'
 BroadcastSingleSessionStart: '&6%owner 対 %cpu(%difficulty) のリバーシ対戦が開始しました！'
-BroadcastSingleSessionEnd: '&6%owner 対 %cpu(%difficulty) のリバーシ対戦が終了しました！%black 対 %white で、%winnerさんの勝利です！'
-BroadcastSingleSessionEndDraw: '&6%owner 対 %cpu(%difficulty) のリバーシ対戦が終了しました！%black 対 %white で、引き分けです！'
+BroadcastSingleSessionEnd: '&6%owner 対 %cpu(%difficulty) のリバーシ対戦が終了しました！\n%black 対 %white で、%winnerさんの勝利です！'
+BroadcastSingleSessionEndDraw: '&6%owner 対 %cpu(%difficulty) のリバーシ対戦が終了しました！\n%black 対 %white で、引き分けです！'
 
 RankingTitle: '&f===== %type ランキング ====='
 RankingPlay: 'プレイ数'

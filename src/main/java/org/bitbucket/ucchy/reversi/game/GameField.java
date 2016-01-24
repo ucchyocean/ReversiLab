@@ -68,10 +68,10 @@ public class GameField {
 
         // アーマースタンドを生成、中央に石を置く
         stands = new ArmorStand[8][8];
-        putStone(3, 3, CellState.BLACK);
-        putStone(3, 4, CellState.WHITE);
-        putStone(4, 3, CellState.WHITE);
-        putStone(4, 4, CellState.BLACK);
+        putStone(3, 3, Piece.BLACK);
+        putStone(3, 4, Piece.WHITE);
+        putStone(4, 3, Piece.WHITE);
+        putStone(4, 4, Piece.BLACK);
 
         // プレイヤーの開始位置を設定
         this.primaryPlayerLocation = origin.clone().add(4, 5, -1)
@@ -84,9 +84,9 @@ public class GameField {
      * 指定した座標に石を置く。
      * @param x マス目のx座標
      * @param y マス目のy座標
-     * @param state 置く石
+     * @param piece 置く石
      */
-    protected void putStone(int x, int y, CellState state) {
+    protected void putStone(int x, int y, Piece piece) {
 
         if ( stands[y][x] == null ) {
 
@@ -106,7 +106,7 @@ public class GameField {
         ArmorStand stand = stands[y][x];
 
         ItemStack item;
-        if ( state == CellState.BLACK ) {
+        if ( piece == Piece.BLACK ) {
             item = new ItemStack(Material.NETHER_BRICK);
         } else {
             item = new ItemStack(Material.QUARTZ_BLOCK);
@@ -115,7 +115,7 @@ public class GameField {
 
         // エフェクト発生
         Location effectLocation = stand.getLocation().add(0, 1.5, 0);
-        int data = (state == CellState.BLACK) ? 49 : 42;
+        int data = (piece == Piece.BLACK) ? 49 : 42;
         stand.getWorld().playEffect(effectLocation, Effect.STEP_SOUND, data);
     }
 

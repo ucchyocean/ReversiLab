@@ -1,7 +1,7 @@
 package org.bitbucket.ucchy.reversi.ai;
 
-import org.bitbucket.ucchy.reversi.game.CellState;
 import org.bitbucket.ucchy.reversi.game.GameBoard;
+import org.bitbucket.ucchy.reversi.game.Piece;
 import org.bitbucket.ucchy.reversi.game.SingleGameDifficulty;
 
 /**
@@ -11,14 +11,14 @@ import org.bitbucket.ucchy.reversi.game.SingleGameDifficulty;
 public class ReversiAINormal implements ReversiAI {
 
     private static final int[][] PRIORITY = {
-        {5, 0, 3, 4, 4, 3, 0, 5},
-        {0, 0, 1, 1, 1, 1, 0, 0},
-        {3, 1, 2, 2, 2, 2, 1, 3},
-        {4, 1, 2, 2, 2, 2, 1, 4},
-        {4, 1, 2, 2, 2, 2, 1, 4},
-        {3, 1, 2, 2, 2, 2, 1, 3},
-        {0, 0, 1, 1, 1, 1, 0, 0},
-        {5, 0, 3, 4, 4, 3, 0, 5},
+        {120,-20, 20,  5,  5, 20,-20,120},
+        {-20,-40, -5, -5, -5, -5,-40,-20},
+        { 20, -5, 15,  3,  3, 15, -5, 20},
+        {  5, -5,  3,  3,  3,  3, -5,  5},
+        {  5, -5,  3,  3,  3,  3, -5,  5},
+        { 20, -5, 15,  3,  3, 15, -5, 20},
+        {-20,-40, -5, -5, -5, -5,-40,-20},
+        {120,-20, 20,  5,  5, 20,-20,120},
     };
 
     /**
@@ -30,19 +30,23 @@ public class ReversiAINormal implements ReversiAI {
     }
 
     /**
-     * @see org.bitbucket.ucchy.reversi.ai.ReversiAI#getNext(org.bitbucket.ucchy.reversi.game.GameBoard, org.bitbucket.ucchy.reversi.game.CellState)
+     * @see org.bitbucket.ucchy.reversi.ai.ReversiAI#getNext(org.bitbucket.ucchy.reversi.game.GameBoard, org.bitbucket.ucchy.reversi.game.Piece)
      */
     @Override
-    public int[] getNext(GameBoard board, CellState state) {
+    public int[] getNext(GameBoard board, Piece piece) {
 
-        // 現在おける場所で、裏返すことができる個数 x 重み付け が最大になる場所を探す。
+        // 現在おける場所で、PRIORITYが最大、かつ、裏返せる個数がなるべく少なくなる場所を探す。
         int[] coordinates = new int[2];
-        int value = 0;
+        int priority = -999;
+        int value = 999;
 
         for ( int x=0; x<8; x++ ) {
             for ( int y=0; y<8; y++ ) {
-                int v = board.findPath(x, y, state).size() * getWeight(x, y);
-                if ( value < v ) {
+                int p = PRIORITY[x][y];
+                int v = board.findPath(x, y, piece).size();
+                if ( v == 0 ) continue;
+                if ( priority < p || (priority == p && value > v) ) {
+                    priority = p;
                     value = v;
                     coordinates[0] = x;
                     coordinates[1] = y;
@@ -51,18 +55,5 @@ public class ReversiAINormal implements ReversiAI {
         }
 
         return coordinates;
-    }
-
-    private static int getWeight(int x, int y) {
-
-        switch ( PRIORITY[x][y] ) {
-        case 0: return 1;
-        case 1: return 10;
-        case 2: return 100;
-        case 3: return 1000;
-        case 4: return 10000;
-        case 5: return 100000;
-        default: return 1;
-        }
     }
 }

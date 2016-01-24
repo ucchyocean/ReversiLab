@@ -46,11 +46,11 @@ ErrorOwnerInProhibitWorlds: 'Because %owner move to Reversi prohibited world, Re
 ErrorOwnerIsOffline: 'Because %owner is offline, Reversi game session has been canceled.'
 
 BroadcastSessionStart: '&6Reversi session (%owner vs %opponent) started!'
-BroadcastSessionEnd: '&6Reversi session (%owner vs %opponent) ended! winner: %winner (%black : %white)'
-BroadcastSessionEndDraw: '&6Reversi session (%owner vs %opponent) ended! draw game (%black : %white)'
+BroadcastSessionEnd: '&6Reversi session (%owner vs %opponent) ended!\nwinner: %winner (%black : %white)'
+BroadcastSessionEndDraw: '&6Reversi session (%owner vs %opponent) ended!\ndraw game (%black : %white)'
 BroadcastSingleSessionStart: '&6Reversi session (%owner vs %cpu %difficulty) started!'
-BroadcastSingleSessionEnd: '&6Reversi session (%owner vs %cpu %difficulty) ended! winner: %winner (%black : %white)'
-BroadcastSingleSessionEndDraw: '&6Reversi session (%owner vs %cpu %difficulty) ended! draw game (%black : %white)'
+BroadcastSingleSessionEnd: '&6Reversi session (%owner vs %cpu %difficulty) ended!\nwinner: %winner (%black : %white)'
+BroadcastSingleSessionEndDraw: '&6Reversi session (%owner vs %cpu %difficulty) ended!\ndraw game (%black : %white)'
 
 RankingTitle: '===== %type Ranking ====='
 RankingPlay: 'Play Count'

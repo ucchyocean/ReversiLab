@@ -5,8 +5,8 @@
  */
 package org.bitbucket.ucchy.reversi.ai;
 
-import org.bitbucket.ucchy.reversi.game.CellState;
 import org.bitbucket.ucchy.reversi.game.GameBoard;
+import org.bitbucket.ucchy.reversi.game.Piece;
 import org.bitbucket.ucchy.reversi.game.SingleGameDifficulty;
 
 /**
@@ -16,14 +16,14 @@ import org.bitbucket.ucchy.reversi.game.SingleGameDifficulty;
 public class ReversiAIHard implements ReversiAI {
 
     private static final int[][] PRIORITY = {
-        {5, 1, 3, 4, 4, 3, 1, 5},
-        {1, 0, 1, 1, 1, 1, 0, 1},
-        {3, 1, 2, 2, 2, 2, 1, 3},
-        {4, 1, 2, 2, 2, 2, 1, 4},
-        {4, 1, 2, 2, 2, 2, 1, 4},
-        {3, 1, 2, 2, 2, 2, 1, 3},
-        {1, 0, 1, 1, 1, 1, 0, 1},
-        {5, 1, 3, 4, 4, 3, 1, 5},
+        {120,-20, 20,  5,  5, 20,-20,120},
+        {-20,-40, -5, -5, -5, -5,-40,-20},
+        { 20, -5, 15,  3,  3, 15, -5, 20},
+        {  5, -5,  3,  3,  3,  3, -5,  5},
+        {  5, -5,  3,  3,  3,  3, -5,  5},
+        { 20, -5, 15,  3,  3, 15, -5, 20},
+        {-20,-40, -5, -5, -5, -5,-40,-20},
+        {120,-20, 20,  5,  5, 20,-20,120},
     };
 
     /**
@@ -35,16 +35,16 @@ public class ReversiAIHard implements ReversiAI {
     }
 
     /**
-     * @see org.bitbucket.ucchy.reversi.ai.ReversiAI#getNext(org.bitbucket.ucchy.reversi.game.GameBoard, org.bitbucket.ucchy.reversi.game.CellState)
+     * @see org.bitbucket.ucchy.reversi.ai.ReversiAI#getNext(org.bitbucket.ucchy.reversi.game.GameBoard, org.bitbucket.ucchy.reversi.game.Piece)
      */
     @Override
-    public int[] getNext(GameBoard board, CellState state) {
+    public int[] getNext(GameBoard board, Piece piece) {
 
         int[] coordinates = new int[2];
         int score = 0;
         for ( int x=0; x<8; x++ ) {
             for ( int y=0; y<8; y++ ) {
-                int s = getScore(x, y, board, state);
+                int s = getScore(x, y, board, piece);
                 if ( score < s ) {
                     score = s;
                     coordinates[0] = x;
@@ -55,73 +55,64 @@ public class ReversiAIHard implements ReversiAI {
         return coordinates;
     }
 
-    private static int getWeight(int x, int y) {
-
-        switch ( PRIORITY[x][y] ) {
-        case 0: return 1;
-        case 1: return 10;
-        case 2: return 100;
-        case 3: return 1000;
-        case 4: return 10000;
-        case 5: return 100000;
-        default: return 1;
-        }
-    }
-
     /**
      * 5手先読みしてスコアを決める。
      * @param x
      * @param y
      * @param board
-     * @param state
+     * @param piece
      * @return
      */
-    private static int getScore(int x, int y, GameBoard board, CellState state) {
+    private static int getScore(int x, int y, GameBoard board, Piece piece) {
 
         // 置くことができない場所は、スコア0
-        if ( !board.canPutAt(x, y, state) ) return 0;
+        if ( !board.canPutAt(x, y, piece) ) return 0;
 
         // まず置いてみる。
         GameBoard first = board.clone();
-        first.putAt(x, y, state);
+        first.putAt(x, y, piece);
 
         // 両者とも置けないなら、この時点で自分の石数をスコアとして返す。
-        if ( !first.canPutAll() ) return first.getCountOf(state);
+        if ( !first.canPutAll() ) return first.getCountOf(piece);
 
         // 相手を予測で置かせてみる。相手がパスになるなら最高点。
-        GameBoard second = getNextBoardByPriority(first, state.getReverse());
+        GameBoard second = getNextBoardByPriority(first, piece.getReverse());
         if ( second == null ) return 99999;
-        if ( !second.canPutAll() ) return second.getCountOf(state);
+        if ( !second.canPutAll() ) return second.getCountOf(piece);
 
         // 自分を予測で置かせてみる。自分がパスになるなら低得点。
-        GameBoard third = getNextBoardByPriority(second, state);
+        GameBoard third = getNextBoardByPriority(second, piece);
         if ( third == null ) return 1;
-        if ( !third.canPutAll() ) return third.getCountOf(state);
+        if ( !third.canPutAll() ) return third.getCountOf(piece);
 
         // 相手を予測で置かせてみる。相手がパスになるなら最高点。
-        GameBoard forth = getNextBoardByPriority(third, state.getReverse());
+        GameBoard forth = getNextBoardByPriority(third, piece.getReverse());
         if ( forth == null ) return 9999;
-        if ( !forth.canPutAll() ) return forth.getCountOf(state);
+        if ( !forth.canPutAll() ) return forth.getCountOf(piece);
 
         // 自分を予測で置かせてみる。自分がパスになるなら低得点。
-        GameBoard fifth = getNextBoardByPriority(forth, state);
+        GameBoard fifth = getNextBoardByPriority(forth, piece);
         if ( fifth == null ) return 2;
-        return fifth.getCountOf(state);
+        return fifth.getCountOf(piece);
     }
 
-    private static GameBoard getNextBoardByPriority(GameBoard board, CellState state) {
+    private static GameBoard getNextBoardByPriority(GameBoard board, Piece piece) {
 
         // パスになる場合は、nullを返す
-        if ( !board.canPut(state) ) return null;
+        if ( !board.canPut(piece) ) return null;
 
-        // 現在おける場所で、裏返すことができる個数 x 重み付け が最大になる場所を探す。
+        // 現在おける場所で、PRIORITYが最大、かつ、裏返せる個数がなるべく少なくなる場所を探す。
         int[] coordinates = new int[2];
-        int value = 0;
+        int priority = -999;
+        int value = 999;
 
         for ( int x=0; x<8; x++ ) {
             for ( int y=0; y<8; y++ ) {
-                int v = board.findPath(x, y, state).size() * getWeight(x, y);
-                if ( value < v ) {
+                int p = PRIORITY[x][y];
+                int v = board.findPath(x, y, piece).size();
+                if ( v == 0 ) continue;
+                if ( priority < p || (priority == p && value > v) ) {
+                    priority = p;
                     value = v;
                     coordinates[0] = x;
                     coordinates[1] = y;
@@ -131,7 +122,22 @@ public class ReversiAIHard implements ReversiAI {
 
         // ボードを複製して、実際におく。
         GameBoard next = board.clone();
-        next.putAt(coordinates[0], coordinates[1], state);
+        next.putAt(coordinates[0], coordinates[1], piece);
         return next;
+    }
+
+    // デバッグエントリ
+    public static void main(String[] args) {
+
+        GameBoard board = new GameBoard();
+        ReversiAI ai = new ReversiAIHard();
+
+        for ( String line : board.getStringForPrint() ) System.out.println(line);
+
+        int[] next = ai.getNext(board, Piece.BLACK);
+        System.out.println(next[0] + " - " + next[1]);
+
+        board.putAt(next[0], next[1], Piece.BLACK);
+        for ( String line : board.getStringForPrint() ) System.out.println(line);
     }
 }
