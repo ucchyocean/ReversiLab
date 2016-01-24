@@ -46,6 +46,16 @@ public class GameBoard {
     }
 
     /**
+     * 指定された座標のピースを取得する
+     * @param x
+     * @param y
+     * @return ピース
+     */
+    public Piece getPieceAt(int x, int y) {
+        return board[y][x];
+    }
+
+    /**
      * 何も置かれていないマス目の個数を返す
      * @return 何も置かれていないマス目の個数
      */

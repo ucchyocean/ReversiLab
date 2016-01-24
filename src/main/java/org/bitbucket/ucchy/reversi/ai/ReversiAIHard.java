@@ -15,14 +15,17 @@ import org.bitbucket.ucchy.reversi.game.SingleGameDifficulty;
  */
 public class ReversiAIHard implements ReversiAI {
 
+    private static boolean DEBUG = false;
+
+    private static final int DEPTH = 4;
     private static final int[][] PRIORITY = {
         {120,-20, 20,  5,  5, 20,-20,120},
-        {-20,-40, -5, -5, -5, -5,-40,-20},
+        {-20,-90, -5, -5, -5, -5,-90,-20},
         { 20, -5, 15,  3,  3, 15, -5, 20},
         {  5, -5,  3,  3,  3,  3, -5,  5},
         {  5, -5,  3,  3,  3,  3, -5,  5},
         { 20, -5, 15,  3,  3, 15, -5, 20},
-        {-20,-40, -5, -5, -5, -5,-40,-20},
+        {-20,-90, -5, -5, -5, -5,-90,-20},
         {120,-20, 20,  5,  5, 20,-20,120},
     };
 
@@ -41,10 +44,23 @@ public class ReversiAIHard implements ReversiAI {
     public int[] getNext(GameBoard board, Piece piece) {
 
         int[] coordinates = new int[2];
-        int score = 0;
+        int score = Integer.MIN_VALUE;
         for ( int x=0; x<8; x++ ) {
             for ( int y=0; y<8; y++ ) {
-                int s = getScore(x, y, board, piece);
+                if ( !board.canPutAt(x, y, piece) ) continue;
+                GameBoard temp = board.clone();
+                temp.putAt(x, y, piece);
+                int s;
+                if ( !temp.canPutAll() ) {
+                    s = getBoardScore(temp, piece);
+                } else {
+                    s = getMinMaxScore(temp, piece.getReverse(), false, DEPTH - 1);
+                }
+
+                if ( DEBUG ) {
+                    System.out.println(String.format("(%2d,%2d) %3d", x, y, s));
+                }
+
                 if ( score < s ) {
                     score = s;
                     coordinates[0] = x;
@@ -52,92 +68,107 @@ public class ReversiAIHard implements ReversiAI {
                 }
             }
         }
+
         return coordinates;
     }
 
     /**
-     * 5手先読みしてスコアを決める。
-     * @param x
-     * @param y
-     * @param board
-     * @param piece
+     * ミニマックス法でスコアを求める
+     * @param board 盤面
+     * @param piece 次の手番
+     * @param isMax 最大を求めるか、最小を求めるか
+     * @param depth 探索深度
      * @return
      */
-    private static int getScore(int x, int y, GameBoard board, Piece piece) {
+    private int getMinMaxScore(GameBoard board, Piece piece, boolean isMax, int depth) {
 
-        // 置くことができない場所は、スコア0
-        if ( !board.canPutAt(x, y, piece) ) return 0;
+        int score = isMax ? Integer.MIN_VALUE : Integer.MAX_VALUE;
 
-        // まず置いてみる。
-        GameBoard first = board.clone();
-        first.putAt(x, y, piece);
+        for ( int y=0; y<8; y++ ) {
+            for ( int x=0; x<8; x++ ) {
+                if ( !board.canPutAt(x, y, piece) ) continue;
+                GameBoard temp = board.clone();
+                temp.putAt(x, y, piece);
+                int s;
+                if ( depth <= 0 || !temp.canPutAll() ) {
+                    s = getBoardScore(temp, piece);
+                } else {
+                    s = getMinMaxScore(temp, piece.getReverse(), !isMax, depth - 1);
+                }
 
-        // 両者とも置けないなら、この時点で自分の石数をスコアとして返す。
-        if ( !first.canPutAll() ) return first.getCountOf(piece);
+                if ( DEBUG ) {
+                    for ( int i=0; i<(DEPTH - depth + 1); i++ ) {
+                        System.out.print("  ");
+                    }
+                    System.out.println(String.format("(%2d,%2d) %3d", x, y, s));
+                }
 
-        // 相手を予測で置かせてみる。相手がパスになるなら最高点。
-        GameBoard second = getNextBoardByPriority(first, piece.getReverse());
-        if ( second == null ) return 99999;
-        if ( !second.canPutAll() ) return second.getCountOf(piece);
-
-        // 自分を予測で置かせてみる。自分がパスになるなら低得点。
-        GameBoard third = getNextBoardByPriority(second, piece);
-        if ( third == null ) return 1;
-        if ( !third.canPutAll() ) return third.getCountOf(piece);
-
-        // 相手を予測で置かせてみる。相手がパスになるなら最高点。
-        GameBoard forth = getNextBoardByPriority(third, piece.getReverse());
-        if ( forth == null ) return 9999;
-        if ( !forth.canPutAll() ) return forth.getCountOf(piece);
-
-        // 自分を予測で置かせてみる。自分がパスになるなら低得点。
-        GameBoard fifth = getNextBoardByPriority(forth, piece);
-        if ( fifth == null ) return 2;
-        return fifth.getCountOf(piece);
-    }
-
-    private static GameBoard getNextBoardByPriority(GameBoard board, Piece piece) {
-
-        // パスになる場合は、nullを返す
-        if ( !board.canPut(piece) ) return null;
-
-        // 現在おける場所で、PRIORITYが最大、かつ、裏返せる個数がなるべく少なくなる場所を探す。
-        int[] coordinates = new int[2];
-        int priority = -999;
-        int value = 999;
-
-        for ( int x=0; x<8; x++ ) {
-            for ( int y=0; y<8; y++ ) {
-                int p = PRIORITY[x][y];
-                int v = board.findPath(x, y, piece).size();
-                if ( v == 0 ) continue;
-                if ( priority < p || (priority == p && value > v) ) {
-                    priority = p;
-                    value = v;
-                    coordinates[0] = x;
-                    coordinates[1] = y;
+                if ( isMax && score < s ) {
+                    score = s;
+                } else if ( !isMax && score > s ) {
+                    score = s;
                 }
             }
         }
 
-        // ボードを複製して、実際におく。
-        GameBoard next = board.clone();
-        next.putAt(coordinates[0], coordinates[1], piece);
-        return next;
+        return score;
+    }
+
+    /**
+     * 現在のボード状況から、スコアを算出して返す。
+     * @param board ボード
+     * @param piece どちらの手番のスコアか
+     * @return スコア
+     */
+    private int getBoardScore(GameBoard board, Piece piece) {
+
+        int total = 0;
+
+        for ( int y=0; y<8; y++ ) {
+            for ( int x=0; x<8; x++ ) {
+                if ( board.getPieceAt(x, y) == Piece.EMPTY ) {
+                    continue;
+                } else if ( board.getPieceAt(x, y) == piece ) {
+                    total += PRIORITY[y][x];
+                } else {
+                    total -= PRIORITY[y][x];
+                }
+            }
+        }
+
+        return total;
     }
 
     // デバッグエントリ
     public static void main(String[] args) {
 
+        DEBUG = false;
         GameBoard board = new GameBoard();
         ReversiAI ai = new ReversiAIHard();
 
+        board.putAt(4, 2, Piece.BLACK);
+        board.putAt(3, 2, Piece.WHITE);
+        board.putAt(2, 2, Piece.BLACK);
+        board.putAt(5, 4, Piece.WHITE);
+        board.putAt(5, 5, Piece.BLACK);
+        board.putAt(3, 1, Piece.WHITE);
+        board.putAt(2, 0, Piece.BLACK);
+        board.putAt(5, 3, Piece.WHITE);
+        board.putAt(5, 2, Piece.BLACK);
+        board.putAt(3, 0, Piece.WHITE);
+        board.putAt(4, 0, Piece.BLACK);
+        board.putAt(6, 4, Piece.WHITE);
+        board.putAt(7, 5, Piece.BLACK);
+        board.putAt(7, 4, Piece.WHITE);
+        board.putAt(7, 3, Piece.BLACK);
+        //board.putAt(6, 1, Piece.WHITE);
+
         for ( String line : board.getStringForPrint() ) System.out.println(line);
 
-        int[] next = ai.getNext(board, Piece.BLACK);
+        int[] next = ai.getNext(board, Piece.WHITE);
         System.out.println(next[0] + " - " + next[1]);
 
-        board.putAt(next[0], next[1], Piece.BLACK);
+        board.putAt(next[0], next[1], Piece.WHITE);
         for ( String line : board.getStringForPrint() ) System.out.println(line);
     }
 }

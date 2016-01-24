@@ -123,6 +123,7 @@ public abstract class GameSession {
                 // 参加前に居た場所に戻す
                 Location loc = spectatorReturnPoints.get(name);
                 spectator.teleport(loc, TeleportCause.PLUGIN);
+                spectator.setFallDistance(0);
 
                 // ゲームモードを変更
                 spectator.setGameMode(GameMode.SURVIVAL);

@@ -29,7 +29,7 @@ import org.bukkit.scheduler.BukkitRunnable;
  */
 public class SingleGameSession extends GameSession {
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     private static final int EFFECT_SPEED = 3;
 
     private ReversiLab parent;
@@ -254,6 +254,8 @@ public class SingleGameSession extends GameSession {
         final ArrayList<int[]> reverses = getBoard().putAt(x, y, piece);
         getField().putStone(x, y, piece);
 
+        log(String.format("(%2d,%2d) %s", x, y, piece));
+
         // 演出のために、1つ1つ遅延をかけてひっくり返す
         new BukkitRunnable() {
             int index = 0;
@@ -379,6 +381,7 @@ public class SingleGameSession extends GameSession {
             // 飛行状態を解除する
             owner.setAllowFlight(false);
             owner.setFlying(false);
+            owner.setFallDistance(0);
 
             // 持ち物を預かっているなら返す
             if ( tempStorage != null ) {
