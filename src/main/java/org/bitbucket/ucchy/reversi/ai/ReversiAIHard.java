@@ -19,14 +19,14 @@ public class ReversiAIHard implements ReversiAI {
 
     private static final int DEPTH = 4;
     private static final int[][] PRIORITY = {
-        {120,-20, 20,  5,  5, 20,-20,120},
-        {-20,-90, -5, -5, -5, -5,-90,-20},
-        { 20, -5, 15,  3,  3, 15, -5, 20},
-        {  5, -5,  3,  3,  3,  3, -5,  5},
-        {  5, -5,  3,  3,  3,  3, -5,  5},
-        { 20, -5, 15,  3,  3, 15, -5, 20},
-        {-20,-90, -5, -5, -5, -5,-90,-20},
-        {120,-20, 20,  5,  5, 20,-20,120},
+        { 30,-12,  0, -1, -1,  0,-12, 30},
+        {-12,-15, -3, -3, -3, -3,-15,-12},
+        {  0, -3,  0, -1, -1,  0, -3,  0},
+        { -1, -3, -1, -1, -1, -1, -3, -1},
+        { -1, -3, -1, -1, -1, -1, -3, -1},
+        {  0, -3,  0, -1, -1,  0, -3,  0},
+        {-12,-15, -3, -3, -3, -3,-15,-12},
+        { 30,-12,  0, -1, -1,  0,-12, 30},
     };
 
     /**
@@ -54,7 +54,7 @@ public class ReversiAIHard implements ReversiAI {
                 if ( !temp.canPutAll() ) {
                     s = getBoardScore(temp, piece);
                 } else {
-                    s = getMinMaxScore(temp, piece.getReverse(), false, DEPTH - 1);
+                    s = getMinMaxScore(temp, piece.getReverse(), false, DEPTH - 1, Integer.MIN_VALUE);
                 }
 
                 if ( DEBUG ) {
@@ -78,9 +78,10 @@ public class ReversiAIHard implements ReversiAI {
      * @param piece 次の手番
      * @param isMax 最大を求めるか、最小を求めるか
      * @param depth 探索深度
-     * @return
+     * @param threshold 探索のしきい値
+     * @return スコア
      */
-    private int getMinMaxScore(GameBoard board, Piece piece, boolean isMax, int depth) {
+    private int getMinMaxScore(GameBoard board, Piece piece, boolean isMax, int depth, int threshold) {
 
         int score = isMax ? Integer.MIN_VALUE : Integer.MAX_VALUE;
 
@@ -93,7 +94,7 @@ public class ReversiAIHard implements ReversiAI {
                 if ( depth <= 0 || !temp.canPutAll() ) {
                     s = getBoardScore(temp, piece);
                 } else {
-                    s = getMinMaxScore(temp, piece.getReverse(), !isMax, depth - 1);
+                    s = getMinMaxScore(temp, piece.getReverse(), !isMax, depth - 1, score);
                 }
 
                 if ( DEBUG ) {
@@ -105,8 +106,14 @@ public class ReversiAIHard implements ReversiAI {
 
                 if ( isMax && score < s ) {
                     score = s;
+                    if ( threshold < score ) {
+                        return score;
+                    }
                 } else if ( !isMax && score > s ) {
                     score = s;
+                    if ( score < threshold ) {
+                        return score;
+                    }
                 }
             }
         }
@@ -165,6 +172,7 @@ public class ReversiAIHard implements ReversiAI {
 
         for ( String line : board.getStringForPrint() ) System.out.println(line);
 
+        DEBUG = true;
         int[] next = ai.getNext(board, Piece.WHITE);
         System.out.println(next[0] + " - " + next[1]);
 

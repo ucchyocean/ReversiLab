@@ -3,7 +3,7 @@
  * @license    LGPLv3
  * @copyright  Copyright ucchy 2015
  */
-package org.bitbucket.ucchy.reversi.game;
+package org.bitbucket.ucchy.reversi.ranking;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import org.bitbucket.ucchy.reversi.Utility;
+import org.bitbucket.ucchy.reversi.game.SingleGameDifficulty;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -39,10 +40,10 @@ public class PlayerScoreData {
     private UUID id;
 
     // 各種統計情報
-    private int gamePlayed;
-    private int gameWin;
-    private int gameLose;
-    private int gameDraw;
+    private PlayerScoreComponent versus;
+    private PlayerScoreComponent easy;
+    private PlayerScoreComponent normal;
+    private PlayerScoreComponent hard;
 
     /**
      * コンストラクタ。
@@ -57,10 +58,10 @@ public class PlayerScoreData {
     private PlayerScoreData(OfflinePlayer player) {
         this.name = player.getName();
         this.id = player.getUniqueId();
-        this.gamePlayed = 0;
-        this.gameWin = 0;
-        this.gameLose = 0;
-        this.gameDraw = 0;
+        this.versus = new PlayerScoreComponent();
+        this.easy = new PlayerScoreComponent();
+        this.normal = new PlayerScoreComponent();
+        this.hard = new PlayerScoreComponent();
     }
 
     /**
@@ -78,10 +79,10 @@ public class PlayerScoreData {
 
         YamlConfiguration config = new YamlConfiguration();
         config.set("name", name);
-        config.set("gamePlayed", gamePlayed);
-        config.set("gameWin", gameWin);
-        config.set("gameLose", gameLose);
-        config.set("gameDraw", gameDraw);
+        versus.saveToSection(config.createSection("versus"));
+        easy.saveToSection(config.createSection("easy"));
+        normal.saveToSection(config.createSection("normal"));
+        hard.saveToSection(config.createSection("hard"));
 
         try {
             config.save(file);
@@ -105,10 +106,10 @@ public class PlayerScoreData {
 
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         data.name = config.getString("name", "xxx");
-        data.gamePlayed = config.getInt("gamePlayed", 0);
-        data.gameWin = config.getInt("gameWin", 0);
-        data.gameLose = config.getInt("gameLose", 0);
-        data.gameDraw = config.getInt("gameDraw", 0);
+        data.versus = PlayerScoreComponent.loadFromSection(config.getConfigurationSection("versus"));
+        data.easy = PlayerScoreComponent.loadFromSection(config.getConfigurationSection("easy"));
+        data.normal = PlayerScoreComponent.loadFromSection(config.getConfigurationSection("normal"));
+        data.hard = PlayerScoreComponent.loadFromSection(config.getConfigurationSection("hard"));
 
         return data;
     }
@@ -199,51 +200,52 @@ public class PlayerScoreData {
         return name;
     }
 
-    public int getGamePlayed() {
-        return gamePlayed;
+    public PlayerScoreComponent getVersus() {
+        return versus;
     }
 
-    public int getGameWin() {
-        return gameWin;
+    public PlayerScoreComponent getEasy() {
+        return easy;
     }
 
-    public int getGameLose() {
-        return gameLose;
+    public PlayerScoreComponent getNormal() {
+        return normal;
     }
 
-    public int getGameDraw() {
-        return gameDraw;
+    public PlayerScoreComponent getHard() {
+        return hard;
     }
 
-    public double getRatio() {
-        return (double)gameWin / (double)(gameWin + gameLose);
+    public PlayerScoreComponent get(String name) {
+        if ( name.equalsIgnoreCase("easy") ) {
+            return easy;
+        } else if ( name.equalsIgnoreCase("normal") ) {
+            return normal;
+        } else if ( name.equalsIgnoreCase("hard") ) {
+            return hard;
+        }
+        return versus;
     }
 
-    public void increaseGamePlayed() {
-        this.gamePlayed++;
-    }
-
-    public void increaseGameWin() {
-        this.gameWin++;
-    }
-
-    public void increaseGameLose() {
-        this.gameLose++;
-    }
-
-    public void increaseGameDraw() {
-        this.gameDraw++;
+    public PlayerScoreComponent get(SingleGameDifficulty difficulty) {
+        switch ( difficulty ) {
+        case EASY: return easy;
+        case NORMAL: return normal;
+        case HARD: return hard;
+        }
+        return null;
     }
 
     /**
      * ArrayList&lt;PlayerScoreData&gt; 型の配列を、プレイ回数降順にソートする。
      * @param data ソート対象の配列
+     * @param name ソート対象のパラメータ(versus, easy, normal, hard)
      */
-    public static void sortByGamePlayed(ArrayList<PlayerScoreData> data) {
+    public static void sortByGamePlayed(ArrayList<PlayerScoreData> data, final String name) {
 
         Collections.sort(data, new Comparator<PlayerScoreData>() {
             public int compare(PlayerScoreData ent1, PlayerScoreData ent2) {
-                return ent2.gamePlayed - ent1.gamePlayed;
+                return ent2.get(name).getPlayed() - ent1.get(name).getPlayed();
             }
         });
     }
@@ -251,12 +253,13 @@ public class PlayerScoreData {
     /**
      * ArrayList&lt;PlayerScoreData&gt; 型の配列を、勝利回数降順にソートする。
      * @param data ソート対象の配列
+     * @param name ソート対象のパラメータ(versus, easy, normal, hard)
      */
-    public static void sortByGameWin(ArrayList<PlayerScoreData> data) {
+    public static void sortByGameWin(ArrayList<PlayerScoreData> data, final String name) {
 
         Collections.sort(data, new Comparator<PlayerScoreData>() {
             public int compare(PlayerScoreData ent1, PlayerScoreData ent2) {
-                return ent2.gameWin - ent1.gameWin;
+                return ent2.get(name).getWin() - ent1.get(name).getWin();
             }
         });
     }
@@ -264,12 +267,13 @@ public class PlayerScoreData {
     /**
      * ArrayList&lt;PlayerScoreData&gt; 型の配列を、敗北回数降順にソートする。
      * @param data ソート対象の配列
+     * @param name ソート対象のパラメータ(versus, easy, normal, hard)
      */
-    public static void sortByGameLose(ArrayList<PlayerScoreData> data) {
+    public static void sortByGameLose(ArrayList<PlayerScoreData> data, final String name) {
 
         Collections.sort(data, new Comparator<PlayerScoreData>() {
             public int compare(PlayerScoreData ent1, PlayerScoreData ent2) {
-                return ent2.gameLose - ent1.gameLose;
+                return ent2.get(name).getLose() - ent1.get(name).getLose();
             }
         });
     }
@@ -277,15 +281,30 @@ public class PlayerScoreData {
     /**
      * ArrayList&lt;PlayerScoreData&gt; 型の配列を、勝率の降順にソートする。
      * @param data ソート対象の配列
+     * @param name ソート対象のパラメータ(versus, easy, normal, hard)
      */
-    public static void sortByRatio(ArrayList<PlayerScoreData> data) {
+    public static void sortByRatio(ArrayList<PlayerScoreData> data, final String name) {
 
         Collections.sort(data, new Comparator<PlayerScoreData>() {
             public int compare(PlayerScoreData ent1, PlayerScoreData ent2) {
-                if ( ent2.getRatio() > ent1.getRatio() ) return 1;
-                if ( ent2.getRatio() < ent1.getRatio() ) return -1;
+                double ratio1 = ent1.get(name).getRatio();
+                double ratio2 = ent2.get(name).getRatio();
+                if ( ratio2 > ratio1 ) return 1;
+                if ( ratio2 < ratio1 ) return -1;
                 return 0;
             }
         });
+    }
+
+    public static void sortBy(ArrayList<PlayerScoreData> data, final String name, String type) {
+        if ( type.equals("played") ) {
+            sortByGamePlayed(data, name);
+        } else if ( type.equals("lose") ) {
+            sortByGameLose(data, name);
+        } else if ( type.equals("ratio") ) {
+            sortByRatio(data, name);
+        } else {
+            sortByGameWin(data, name);
+        }
     }
 }

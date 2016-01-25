@@ -11,6 +11,7 @@ import org.bitbucket.ucchy.reversi.Messages;
 import org.bitbucket.ucchy.reversi.ReversiLab;
 import org.bitbucket.ucchy.reversi.TitleDisplayComponent;
 import org.bitbucket.ucchy.reversi.Utility;
+import org.bitbucket.ucchy.reversi.ranking.PlayerScoreData;
 import org.bitbucket.ucchy.reversi.tellraw.ClickEventType;
 import org.bitbucket.ucchy.reversi.tellraw.MessageComponent;
 import org.bitbucket.ucchy.reversi.tellraw.MessageParts;
@@ -252,6 +253,8 @@ public class VersusGameSession extends GameSession {
         final ArrayList<int[]> reverses = getBoard().putAt(x, y, piece);
         getField().putStone(x, y, piece);
 
+        log(String.format("(%d,%d) %s", x, y, piece));
+
         // 演出のために、1つ1つ遅延をかけてひっくり返す
         new BukkitRunnable() {
             int index = 0;
@@ -339,21 +342,21 @@ public class VersusGameSession extends GameSession {
         // ランキングデータに勝敗を加算する
         if ( winner != null ) {
             PlayerScoreData winnerScore = PlayerScoreData.getData(winner);
-            winnerScore.increaseGamePlayed();
-            winnerScore.increaseGameWin();
+            winnerScore.getVersus().incrementPlayed();
+            winnerScore.getVersus().incrementWin();
             winnerScore.save();
             PlayerScoreData looserScore = PlayerScoreData.getData(looser);
-            looserScore.increaseGamePlayed();
-            looserScore.increaseGameLose();
+            looserScore.getVersus().incrementPlayed();
+            looserScore.getVersus().incrementLose();
             looserScore.save();
         } else {
             PlayerScoreData blackScore = PlayerScoreData.getData(blackPlayerName);
-            blackScore.increaseGamePlayed();
-            blackScore.increaseGameDraw();
+            blackScore.getVersus().incrementPlayed();
+            blackScore.getVersus().incrementDraw();
             blackScore.save();
             PlayerScoreData whiteScore = PlayerScoreData.getData(whitePlayerName);
-            whiteScore.increaseGamePlayed();
-            whiteScore.increaseGameDraw();
+            whiteScore.getVersus().incrementPlayed();
+            whiteScore.getVersus().incrementDraw();
             whiteScore.save();
         }
 

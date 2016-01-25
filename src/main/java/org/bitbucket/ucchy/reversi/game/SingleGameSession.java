@@ -15,6 +15,7 @@ import org.bitbucket.ucchy.reversi.ai.ReversiAI;
 import org.bitbucket.ucchy.reversi.ai.ReversiAIEasy;
 import org.bitbucket.ucchy.reversi.ai.ReversiAIHard;
 import org.bitbucket.ucchy.reversi.ai.ReversiAINormal;
+import org.bitbucket.ucchy.reversi.ranking.PlayerScoreData;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -29,7 +30,7 @@ import org.bukkit.scheduler.BukkitRunnable;
  */
 public class SingleGameSession extends GameSession {
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final int EFFECT_SPEED = 3;
 
     private ReversiLab parent;
@@ -254,7 +255,7 @@ public class SingleGameSession extends GameSession {
         final ArrayList<int[]> reverses = getBoard().putAt(x, y, piece);
         getField().putStone(x, y, piece);
 
-        log(String.format("(%2d,%2d) %s", x, y, piece));
+        log(String.format("(%d,%d) %s", x, y, piece));
 
         // 演出のために、1つ1つ遅延をかけてひっくり返す
         new BukkitRunnable() {
@@ -339,7 +340,24 @@ public class SingleGameSession extends GameSession {
         }
 
         // ランキングデータに勝敗を加算する
-        // TODO
+        if ( winner != null ) {
+            if ( winner.equals(ownerName) ) {
+                PlayerScoreData winnerScore = PlayerScoreData.getData(ownerName);
+                winnerScore.get(difficulty).incrementPlayed();
+                winnerScore.get(difficulty).incrementWin();
+                winnerScore.save();
+            } else {
+                PlayerScoreData looserScore = PlayerScoreData.getData(ownerName);
+                looserScore.get(difficulty).incrementPlayed();
+                looserScore.get(difficulty).incrementLose();
+                looserScore.save();
+            }
+        } else {
+            PlayerScoreData blackScore = PlayerScoreData.getData(ownerName);
+            blackScore.get(difficulty).incrementPlayed();
+            blackScore.get(difficulty).incrementDraw();
+            blackScore.save();
+        }
 
         // 15秒後に帰還する
         new BukkitRunnable() {

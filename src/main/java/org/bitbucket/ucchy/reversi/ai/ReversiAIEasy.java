@@ -5,8 +5,8 @@
  */
 package org.bitbucket.ucchy.reversi.ai;
 
-import org.bitbucket.ucchy.reversi.game.Piece;
 import org.bitbucket.ucchy.reversi.game.GameBoard;
+import org.bitbucket.ucchy.reversi.game.Piece;
 import org.bitbucket.ucchy.reversi.game.SingleGameDifficulty;
 
 /**
@@ -31,11 +31,12 @@ public class ReversiAIEasy implements ReversiAI {
 
         // 現在おける場所で、一番たくさん裏返すことができる場所を探す。
         int[] coordinates = new int[2];
-        int value = 0;
+        int value = Integer.MIN_VALUE;
 
         for ( int x=0; x<8; x++ ) {
             for ( int y=0; y<8; y++ ) {
-                int v = board.findPath(x, y, piece).size();
+                if ( !board.canPutAt(x, y, piece) ) continue;
+                int v = board.findPath(x, y, piece).size() + (int)(Math.random() * 4) - 2;
                 if ( value < v ) {
                     value = v;
                     coordinates[0] = x;

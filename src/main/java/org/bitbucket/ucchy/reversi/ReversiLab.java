@@ -13,7 +13,7 @@ import java.util.Random;
 import org.bitbucket.ucchy.reversi.game.GameSession;
 import org.bitbucket.ucchy.reversi.game.GameSessionManager;
 import org.bitbucket.ucchy.reversi.game.PlayerMoveChecker;
-import org.bitbucket.ucchy.reversi.game.PlayerScoreData;
+import org.bitbucket.ucchy.reversi.ranking.PlayerScoreData;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.World;

@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * ボード
  * @author ucchy
  */
-public class GameBoard {
+public class GameBoard implements Cloneable {
 
     private Piece[][] board;
 
@@ -33,7 +33,7 @@ public class GameBoard {
 
     /**
      * このボードのクローンを作成して返す
-     * @see java.lang.Object#clone()
+     * @see java.lang.Cloneable#clone()
      */
     public GameBoard clone() {
         GameBoard clone = new GameBoard();

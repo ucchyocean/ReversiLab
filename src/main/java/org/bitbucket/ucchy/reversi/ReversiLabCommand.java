@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bitbucket.ucchy.reversi.game.GameSession;
-import org.bitbucket.ucchy.reversi.game.PlayerScoreData;
 import org.bitbucket.ucchy.reversi.game.SingleGameDifficulty;
 import org.bitbucket.ucchy.reversi.game.VersusGameSession;
+import org.bitbucket.ucchy.reversi.ranking.PlayerScoreData;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -362,28 +362,46 @@ public class ReversiLabCommand implements TabExecutor {
             return true;
         }
 
-        // ランキングデータの取得とソート
-        String title;
-        ArrayList<PlayerScoreData> datas = PlayerScoreData.getAllData();
-        if ( args.length >= 2 && args[1].equalsIgnoreCase("play") ) {
-            PlayerScoreData.sortByGamePlayed(datas);
-            title = Messages.get("RankingTitle", "%type", Messages.get("RankingPlay"));
-        } else if ( args.length >= 2 && args[1].equalsIgnoreCase("played") ) {
-            PlayerScoreData.sortByGamePlayed(datas);
-            title = Messages.get("RankingTitle", "%type", Messages.get("RankingPlay"));
-        } else if ( args.length >= 2 && args[1].equalsIgnoreCase("ratio") ) {
-            PlayerScoreData.sortByRatio(datas);
-            title = Messages.get("RankingTitle", "%type", Messages.get("RankingRatio"));
-        } else if ( args.length >= 2 && args[1].equalsIgnoreCase("lose") ) {
-            PlayerScoreData.sortByGameLose(datas);
-            title = Messages.get("RankingTitle", "%type", Messages.get("RankingLose"));
-        } else {
-            PlayerScoreData.sortByGameWin(datas);
-            title = Messages.get("RankingTitle", "%type", Messages.get("RankingWin"));
+        // 引数のパース
+        String type = "win";
+        String typeDisplayString = Messages.get("RankingWin");
+        String kind = "versus";
+        String kindDisplayString = Messages.get("RankingVersus");
+
+        if ( args.length >= 2 ) {
+            if ( (args[1].equalsIgnoreCase("play") || args[1].equalsIgnoreCase("played")) ) {
+                type = "played";
+                typeDisplayString = Messages.get("RankingPlay");
+            } else if ( args[1].equalsIgnoreCase("ratio") ) {
+                type = "ratio";
+                typeDisplayString = Messages.get("RankingRatio");
+            } else if ( args[1].equalsIgnoreCase("lose") ) {
+                type = "lose";
+                typeDisplayString = Messages.get("RankingLose");
+            }
         }
 
+        if ( args.length >= 3 ) {
+            if ( args[2].equalsIgnoreCase("easy") ) {
+                kind = "easy";
+                kindDisplayString = SingleGameDifficulty.EASY.toString();
+            } else if ( args[2].equalsIgnoreCase("normal") ) {
+                kind = "normal";
+                kindDisplayString = SingleGameDifficulty.NORMAL.toString();
+            } else if ( args[2].equalsIgnoreCase("hard") ) {
+                kind = "hard";
+                kindDisplayString = SingleGameDifficulty.HARD.toString();
+            }
+        }
+
+        // ランキングデータの取得とソート
+        ArrayList<PlayerScoreData> datas = PlayerScoreData.getAllData();
+        PlayerScoreData.sortBy(datas, kind, type);
+
         // 表示
-        sender.sendMessage(title);
+        sender.sendMessage(Messages.get("RankingTitle",
+                new String[]{"%type", "%kind"},
+                new String[]{typeDisplayString, kindDisplayString}));
 
         boolean isRankin = false;
 
@@ -399,10 +417,10 @@ public class ReversiLabCommand implements TabExecutor {
             String rank = (isSelf ? ChatColor.RED.toString() : "") +
                     String.format("%1$2d", (index + 1));
             String name = String.format("%1$-12s", data.getName());
-            String played = "" + data.getGamePlayed();
-            String win = "" + data.getGameWin();
-            String lose = "" + data.getGameLose();
-            String ratio = String.format("%1$.2f", data.getRatio());
+            String played = "" + data.get(kind).getPlayed();
+            String win = "" + data.get(kind).getWin();
+            String lose = "" + data.get(kind).getLose();
+            String ratio = String.format("%1$.2f", data.get(kind).getRatio());
 
             String line = Messages.get("RankingFormat",
                     new String[]{"%rank", "%name", "%played", "%win", "%lose", "%ratio"},
@@ -417,10 +435,10 @@ public class ReversiLabCommand implements TabExecutor {
                 if ( data.getName().equals(sender.getName()) ) {
                     String rank = ChatColor.RED + String.format("%1$2d", (index + 1));
                     String name = String.format("%1$-12s", data.getName());
-                    String played = "" + data.getGamePlayed();
-                    String win = "" + data.getGameWin();
-                    String lose = "" + data.getGameLose();
-                    String ratio = String.format("%1$.2f", data.getRatio());
+                    String played = "" + data.get(kind).getPlayed();
+                    String win = "" + data.get(kind).getWin();
+                    String lose = "" + data.get(kind).getLose();
+                    String ratio = String.format("%1$.2f", data.get(kind).getRatio());
 
                     String line = Messages.get("RankingFormat",
                             new String[]{"%rank", "%name", "%played", "%win", "%lose", "%ratio"},

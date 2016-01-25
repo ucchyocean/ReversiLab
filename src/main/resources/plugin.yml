@@ -15,7 +15,7 @@ commands:
            /<command> deny - Deny the match request.
            /<command> cancel - Cancel game.
            /<command> spectator (player name) - Join game as spectator.
-           /<command> rank - View ranking data.
+           /<command> rank [win|lose|played|ratio] [versus|easy|normal|hard] - View ranking data.
            /<command> reload - Reload config data.
     permission: reversilab.command
     permission-message: 'You don''t have a permission "<permission>".'

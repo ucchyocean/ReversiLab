@@ -37,13 +37,14 @@ public class ReversiAINormal implements ReversiAI {
 
         // 現在おける場所で、PRIORITYが最大、かつ、裏返せる個数がなるべく少なくなる場所を探す。
         int[] coordinates = new int[2];
-        int priority = -999;
-        int value = 999;
+        int priority = Integer.MIN_VALUE;
+        int value = Integer.MAX_VALUE;
 
         for ( int x=0; x<8; x++ ) {
             for ( int y=0; y<8; y++ ) {
-                int p = PRIORITY[x][y];
-                int v = board.findPath(x, y, piece).size();
+                if ( !board.canPutAt(x, y, piece) ) continue;
+                int p = PRIORITY[x][y] + (int)(Math.random() * 10) - 5;
+                int v = board.findPath(x, y, piece).size() + (int)(Math.random() * 4) - 2;
                 if ( v == 0 ) continue;
                 if ( priority < p || (priority == p && value > v) ) {
                     priority = p;

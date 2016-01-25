@@ -52,11 +52,12 @@ BroadcastSingleSessionStart: '&6%owner 対 %cpu(%difficulty) のリバーシ対�
 BroadcastSingleSessionEnd: '&6%owner 対 %cpu(%difficulty) のリバーシ対戦が終了しました！\n%black 対 %white で、%winnerさんの勝利です！'
 BroadcastSingleSessionEndDraw: '&6%owner 対 %cpu(%difficulty) のリバーシ対戦が終了しました！\n%black 対 %white で、引き分けです！'
 
-RankingTitle: '&f===== %type ランキング ====='
+RankingTitle: '&f===== %kind %type ランキング ====='
 RankingPlay: 'プレイ数'
 RankingWin: '勝利数'
 RankingLose: '敗北数'
 RankingRatio: '勝率'
+RankingVersus: '対戦'
 RankingFormat: '%rank %name&f: &e%played&fplayed, &e%win&fwin, &e%lose&flose, &e%ratio&f%'
 
 NameOfCPU: 'CPU'
