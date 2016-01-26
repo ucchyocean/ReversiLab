@@ -92,7 +92,7 @@ public class GameField {
 
             Location loc = new Location(origin.getWorld(),
                     origin.getBlockX() + x + 0.5,
-                    origin.getBlockY(),
+                    origin.getBlockY() + 0.3,
                     origin.getBlockZ() + y + 0.5);
 
             ArmorStand stand = (ArmorStand)origin.getWorld().spawnEntity(loc, EntityType.ARMOR_STAND);
@@ -105,16 +105,16 @@ public class GameField {
 
         ArmorStand stand = stands[y][x];
 
-        ItemStack item;
+        ItemStack item = new ItemStack(Material.STEP);
         if ( piece == Piece.BLACK ) {
-            item = new ItemStack(Material.NETHER_BRICK);
+            item.setDurability((short) 6);
         } else {
-            item = new ItemStack(Material.QUARTZ_BLOCK);
+            item.setDurability((short) 7);
         }
         stand.setHelmet(item);
 
         // エフェクト発生
-        Location effectLocation = stand.getLocation().add(0, 1.5, 0);
+        Location effectLocation = stand.getLocation().add(0, 1.2, 0);
         int data = (piece == Piece.BLACK) ? 49 : 42;
         stand.getWorld().playEffect(effectLocation, Effect.STEP_SOUND, data);
     }
