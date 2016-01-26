@@ -46,7 +46,7 @@ public class GameSessionLogger {
      */
     public void log(final String message) {
 
-        String msg = ChatColor.stripColor(message).replace(",", "，").replace("\n", " ");
+        String msg = ChatColor.stripColor(message).replace("\n", " ");
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new OutputStreamWriter(

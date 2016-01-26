@@ -18,6 +18,8 @@ public class ReversiAIHard implements ReversiAI {
     private static boolean DEBUG = false;
 
     private static final int DEPTH = 4;
+    private static final int DEPTH_NEAREND = 12;
+
     private static final int[][] PRIORITY = {
         { 30,-12,  0, -1, -1,  0,-12, 30},
         {-12,-15, -3, -3, -3, -3,-15,-12},
@@ -45,6 +47,9 @@ public class ReversiAIHard implements ReversiAI {
 
         int[] coordinates = new int[2];
         int score = Integer.MIN_VALUE;
+        boolean isNearEnd = board.getEmptyCount() <= DEPTH_NEAREND;
+        int depth = !isNearEnd ? DEPTH : DEPTH_NEAREND;
+
         for ( int x=0; x<8; x++ ) {
             for ( int y=0; y<8; y++ ) {
                 if ( !board.canPutAt(x, y, piece) ) continue;
@@ -54,7 +59,7 @@ public class ReversiAIHard implements ReversiAI {
                 if ( !temp.canPutAll() ) {
                     s = getBoardScore(temp, piece);
                 } else {
-                    s = getMinMaxScore(temp, piece.getReverse(), false, DEPTH - 1, Integer.MIN_VALUE);
+                    s = getMinMaxScore(temp, piece.getReverse(), false, depth - 1, Integer.MIN_VALUE);
                 }
 
                 if ( DEBUG ) {
@@ -130,15 +135,24 @@ public class ReversiAIHard implements ReversiAI {
     private int getBoardScore(GameBoard board, Piece piece) {
 
         int total = 0;
+        boolean isNearEnd = board.getEmptyCount() <= DEPTH_NEAREND;
 
         for ( int y=0; y<8; y++ ) {
             for ( int x=0; x<8; x++ ) {
                 if ( board.getPieceAt(x, y) == Piece.EMPTY ) {
                     continue;
                 } else if ( board.getPieceAt(x, y) == piece ) {
-                    total += PRIORITY[y][x];
+                    if ( !isNearEnd ) {
+                        total += PRIORITY[y][x];
+                    } else {
+                        total += 1;
+                    }
                 } else {
-                    total -= PRIORITY[y][x];
+                    if ( !isNearEnd ) {
+                        total -= PRIORITY[y][x];
+                    } else {
+                        total -= 1;
+                    }
                 }
             }
         }

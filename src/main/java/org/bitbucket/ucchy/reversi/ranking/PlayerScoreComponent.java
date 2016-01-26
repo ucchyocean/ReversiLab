@@ -42,6 +42,7 @@ public class PlayerScoreComponent {
     }
 
     public double getRatio() {
+        if ( win + lose == 0 ) return 0;
         return (double)win / (double)(win + lose);
     }
 
