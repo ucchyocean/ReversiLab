@@ -14,6 +14,7 @@ import org.bitbucket.ucchy.reversi.ReversiLab;
 import org.bitbucket.ucchy.reversi.Utility;
 import org.bitbucket.ucchy.reversi.tellraw.MessageComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -36,6 +37,7 @@ public abstract class GameSession {
 
     private ArrayList<String> spectators;
     private HashMap<String, Location> spectatorReturnPoints;
+    private SidebarDisplay sidebar;
 
     /**
      * コンストラクタ
@@ -59,6 +61,9 @@ public abstract class GameSession {
         Location origin = new Location(
                 parent.getWorld(), grid_x * 640, 75, grid_z * 640);
         this.field = new GameField(origin);
+
+        // スコアボードを準備する
+        sidebar = new SidebarDisplay();
     }
 
     /**
@@ -83,6 +88,9 @@ public abstract class GameSession {
 
         // ゲームフィールドへテレポート
         player.teleport(field.getCenterRespawnPoint(), TeleportCause.PLUGIN);
+
+        // サイドバーを設定
+        sidebar.setShowPlayer(player);
 
         // ゲームモードを変更
         player.setGameMode(GameMode.SPECTATOR);
@@ -117,6 +125,9 @@ public abstract class GameSession {
         spectators.remove(player.getName());
         spectatorReturnPoints.remove(player.getName());
 
+        // サイドバーを解除
+        sidebar.setMainScoreboard(player);
+
         // ゲームモードを変更
         player.setGameMode(GameMode.SURVIVAL);
 
@@ -145,6 +156,9 @@ public abstract class GameSession {
                 Location loc = spectatorReturnPoints.get(name);
                 spectator.teleport(loc, TeleportCause.PLUGIN);
                 spectator.setFallDistance(0);
+
+                // サイドバーを解除
+                sidebar.setMainScoreboard(spectator);
 
                 // ゲームモードを変更
                 spectator.setGameMode(GameMode.SURVIVAL);
@@ -304,6 +318,46 @@ public abstract class GameSession {
         if ( message == null || message.equals("") ) return;
         String prefix = Messages.get("PrefixInformation");
         Bukkit.broadcastMessage(prefix + message);
+    }
+
+    /**
+     * サイドバーの残りマス数表示を設定する
+     */
+    protected void setSidebarLeast() {
+        String msg = Messages.get("SidebarTitle", "%least", board.getEmptyCount());
+        sidebar.setTitle(msg);
+    }
+
+    /**
+     * サイドバーに黒のスコア項目を設定する
+     * @param name 項目名
+     */
+    protected void setSidebarBlackScore(String name) {
+        sidebar.setScore(ChatColor.BLACK + name, board.getBlackCount());
+    }
+
+    /**
+     * サイドバーに白のスコア項目を設定する
+     * @param name 項目名
+     */
+    protected void setSidebarWhiteScore(String name) {
+        sidebar.setScore(ChatColor.WHITE + name, board.getWhiteCount());
+    }
+
+    /**
+     * サイドバーの表示対象プレイヤーを設定する
+     * @param player プレイヤー
+     */
+    protected void setSidebarShowPlayer(Player player) {
+        sidebar.setShowPlayer(player);
+    }
+
+    /**
+     * サイドバーの表示対象プレイヤーから外す
+     * @param player プレイヤー
+     */
+    protected void removeSidebar(Player player) {
+        sidebar.setMainScoreboard(player);
     }
 
     /**

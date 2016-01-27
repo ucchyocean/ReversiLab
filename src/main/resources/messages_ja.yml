@@ -61,3 +61,5 @@ RankingVersus: '対戦'
 RankingFormat: '%rank %name&f: &e%played&fplayed, &e%win&fwin, &e%lose&flose, &e%ratio&f%'
 
 NameOfCPU: 'CPU'
+
+SidebarTitle: '&c残り:       %least'

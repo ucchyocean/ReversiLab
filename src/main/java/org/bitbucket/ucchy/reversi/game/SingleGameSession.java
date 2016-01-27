@@ -123,6 +123,17 @@ public class SingleGameSession extends GameSession {
             ai = new ReversiAIHard();
         }
 
+        // サイドバーを設定する
+        setSidebarLeast();
+        if ( isOwnerBlack ) {
+            setSidebarBlackScore(ownerName);
+            setSidebarWhiteScore(Messages.get("NameOfCPU"));
+        } else {
+            setSidebarBlackScore(Messages.get("NameOfCPU"));
+            setSidebarWhiteScore(ownerName);
+        }
+        setSidebarShowPlayer(owner);
+
         // メッセージを流す
         sendInfoMessageAll(Messages.get("InformationStarting"));
         if ( parent.getReversiLabConfig().isBroadcastSessionStartEnd() ) {
@@ -255,7 +266,18 @@ public class SingleGameSession extends GameSession {
         final ArrayList<int[]> reverses = getBoard().putAt(x, y, piece);
         getField().putStone(x, y, piece);
 
+        // ログを記録
         log(String.format("(%d,%d) %s", x, y, piece));
+
+        // サイドバーを設定する
+        setSidebarLeast();
+        if ( isOwnerBlack ) {
+            setSidebarBlackScore(ownerName);
+            setSidebarWhiteScore(Messages.get("NameOfCPU"));
+        } else {
+            setSidebarBlackScore(Messages.get("NameOfCPU"));
+            setSidebarWhiteScore(ownerName);
+        }
 
         // 演出のために、1つ1つ遅延をかけてひっくり返す
         new BukkitRunnable() {
@@ -406,6 +428,9 @@ public class SingleGameSession extends GameSession {
             if ( tempStorage != null ) {
                 tempStorage.restoreFromTemp(owner);
             }
+
+            // スコアボードを非表示にする
+            removeSidebar(owner);
         }
 
         // 全ての観客を退出させる

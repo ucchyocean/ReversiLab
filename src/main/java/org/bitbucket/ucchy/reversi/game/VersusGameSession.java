@@ -149,6 +149,13 @@ public class VersusGameSession extends GameSession {
         ItemStack quartzBlock = new ItemStack(Material.QUARTZ_BLOCK, 64);
         whitePlayer.getInventory().addItem(quartzBlock);
 
+        // サイドバーを設定する
+        setSidebarLeast();
+        setSidebarBlackScore(blackPlayerName);
+        setSidebarWhiteScore(whitePlayerName);
+        setSidebarShowPlayer(owner);
+        setSidebarShowPlayer(opponent);
+
         // メッセージを流す
         sendInfoMessageAll(Messages.get("InformationStarting"));
         if ( parent.getReversiLabConfig().isBroadcastSessionStartEnd() ) {
@@ -253,7 +260,13 @@ public class VersusGameSession extends GameSession {
         final ArrayList<int[]> reverses = getBoard().putAt(x, y, piece);
         getField().putStone(x, y, piece);
 
+        // ログを記録
         log(String.format("(%d,%d) %s", x, y, piece));
+
+        // サイドバーを設定する
+        setSidebarLeast();
+        setSidebarBlackScore(blackPlayerName);
+        setSidebarWhiteScore(whitePlayerName);
 
         // 演出のために、1つ1つ遅延をかけてひっくり返す
         new BukkitRunnable() {
@@ -419,6 +432,9 @@ public class VersusGameSession extends GameSession {
             if ( tempStorage != null ) {
                 tempStorage.restoreFromTemp(owner);
             }
+
+            // スコアボードを非表示にする
+            removeSidebar(owner);
         }
 
         Player opponent = getOpponentPlayer();
@@ -439,6 +455,9 @@ public class VersusGameSession extends GameSession {
             if ( tempStorage != null ) {
                 tempStorage.restoreFromTemp(opponent);
             }
+
+            // スコアボードを非表示にする
+            removeSidebar(opponent);
         }
 
         // 全ての観客を退出させる
