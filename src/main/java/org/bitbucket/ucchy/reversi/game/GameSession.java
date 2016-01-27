@@ -18,6 +18,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * ゲームセッションの抽象クラス
@@ -64,7 +65,7 @@ public abstract class GameSession {
      * 観客としてゲーム参加する
      * @param player
      */
-    public void joinSpectator(Player player) {
+    public void joinSpectator(final Player player) {
 
         // IN_GAMEフェーズでない場合は、何もしない。
         if ( phase != GameSessionPhase.IN_GAME ) {
@@ -85,13 +86,23 @@ public abstract class GameSession {
 
         // ゲームモードを変更
         player.setGameMode(GameMode.SPECTATOR);
+
+        // 低スペックのサーバーPCだと、ゲームモードが切り替わらないことがあるので、
+        // 5秒後に再設定を試みる。
+        new BukkitRunnable() {
+            public void run() {
+                if ( player.isOnline() && player.getGameMode() != GameMode.SPECTATOR ) {
+                    player.setGameMode(GameMode.SPECTATOR);
+                }
+            }
+        }.runTaskLater(ReversiLab.getInstance(), 5 * 20);
     }
 
     /**
      * ゲームの観客から退出する
      * @param player
      */
-    public void leaveSpectator(Player player) {
+    public void leaveSpectator(final Player player) {
 
         // 既に観客でないなら、何もしない。
         if ( !spectators.contains(player.getName()) ) {
@@ -108,6 +119,16 @@ public abstract class GameSession {
 
         // ゲームモードを変更
         player.setGameMode(GameMode.SURVIVAL);
+
+        // 低スペックのサーバーPCだと、ゲームモードが切り替わらないことがあるので、
+        // 5秒後に再設定を試みる。
+        new BukkitRunnable() {
+            public void run() {
+                if ( player.isOnline() && player.getGameMode() != GameMode.SURVIVAL ) {
+                    player.setGameMode(GameMode.SURVIVAL);
+                }
+            }
+        }.runTaskLater(ReversiLab.getInstance(), 5 * 20);
     }
 
     /**
@@ -117,7 +138,7 @@ public abstract class GameSession {
 
         for ( String name : spectators ) {
 
-            Player spectator = Utility.getPlayerExact(name);
+            final Player spectator = Utility.getPlayerExact(name);
             if ( spectator != null ) {
 
                 // 参加前に居た場所に戻す
@@ -127,6 +148,16 @@ public abstract class GameSession {
 
                 // ゲームモードを変更
                 spectator.setGameMode(GameMode.SURVIVAL);
+
+                // 低スペックのサーバーPCだと、ゲームモードが切り替わらないことがあるので、
+                // 5秒後に再設定を試みる。
+                new BukkitRunnable() {
+                    public void run() {
+                        if ( spectator.isOnline() && spectator.getGameMode() != GameMode.SURVIVAL ) {
+                            spectator.setGameMode(GameMode.SURVIVAL);
+                        }
+                    }
+                }.runTaskLater(ReversiLab.getInstance(), 5 * 20);
             }
         }
     }

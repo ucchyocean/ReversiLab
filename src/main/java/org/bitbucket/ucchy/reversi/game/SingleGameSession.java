@@ -400,6 +400,7 @@ public class SingleGameSession extends GameSession {
             owner.setAllowFlight(false);
             owner.setFlying(false);
             owner.setFallDistance(0);
+            owner.setNoDamageTicks(5 * 20);
 
             // 持ち物を預かっているなら返す
             if ( tempStorage != null ) {

@@ -412,6 +412,8 @@ public class VersusGameSession extends GameSession {
             // 飛行状態を解除する
             owner.setAllowFlight(false);
             owner.setFlying(false);
+            owner.setFallDistance(0);
+            owner.setNoDamageTicks(5 * 20);
 
             // 持ち物を預かっているなら返す
             if ( tempStorage != null ) {
@@ -430,6 +432,8 @@ public class VersusGameSession extends GameSession {
             // 飛行状態を解除する
             opponent.setAllowFlight(false);
             opponent.setFlying(false);
+            opponent.setFallDistance(0);
+            opponent.setNoDamageTicks(5 * 20);
 
             // 持ち物を預かっているなら返す
             if ( tempStorage != null ) {
