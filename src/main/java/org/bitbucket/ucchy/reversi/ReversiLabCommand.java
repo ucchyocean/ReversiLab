@@ -462,8 +462,14 @@ public class ReversiLabCommand implements TabExecutor {
         }
 
         // リロードする
-        parent.getReversiLabConfig().reload();
-        Messages.reload(parent.getReversiLabConfig().getLang());
+        ReversiLabConfig config = parent.getReversiLabConfig();
+        config.reload();
+        Messages.reload(config.getLang());
+
+        if ( config.getBetRewardType() == BetRewardType.ECO
+                && parent.getVaultEco() == null ) {
+            config.setBetRewardType(BetRewardType.NONE);
+        }
 
         sendInfoMessage(sender, Messages.get("InformationReloaded"));
         return true;

@@ -16,3 +16,32 @@ prohibitWorlds: []
 
 # ゲーム終了してから、テレポートして元の場所に戻るまでの、待ち時間（秒）
 sessionEndWaitSeconds: 15
+
+# -------------------- 掛け金報酬設定 --------------------
+
+# 掛け金や賞金の機能を使用するかどうか。
+# NONE -> 使用しない
+# ITEM -> 掛け金や報酬をアイテムで設定する
+# ECO -> 掛け金や報酬を経済プラグインのお金で設定する。
+#        Vaultと、連携可能な経済プラグインの導入が必要です。
+betRewardType: NONE
+
+# 掛けアイテム、報酬アイテムの設定
+versusBetItem: DIAMOND
+versusRewardItem: DIAMOND-2
+easyBetItem: WOOD-2
+easyRewardItem: WOOD-5
+normalBetItem: IRON_INGOT-2
+normalRewardItem: IRON_INGOT-5
+hardBetItem: DIAMOND-2
+hardRewardItem: DIAMOND-5
+
+# 掛け金、報酬金の設定
+versusBetEco: 10
+versusRewardEco: 20
+easyBetEco: 3
+easyRewardEco: 7
+normalBetEco: 5
+normalRewardEco: 12
+hardBetEco: 8
+hardRewardEco: 19

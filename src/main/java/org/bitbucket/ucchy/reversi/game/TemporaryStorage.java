@@ -20,20 +20,20 @@ import org.bukkit.inventory.ItemStack;
  */
 public class TemporaryStorage {
 
-    private HashMap<Player, Inventory> invs;
-    private HashMap<Player, Inventory> armors;
-    private HashMap<Player, Integer> levels;
-    private HashMap<Player, Float> exps;
+    private HashMap<String, Inventory> invs;
+    private HashMap<String, Inventory> armors;
+    private HashMap<String, Integer> levels;
+    private HashMap<String, Float> exps;
 
     /**
      * コンストラクタ
      */
     public TemporaryStorage() {
 
-        invs = new HashMap<Player, Inventory>();
-        armors = new HashMap<Player, Inventory>();
-        levels = new HashMap<Player, Integer>();
-        exps = new HashMap<Player, Float>();
+        invs = new HashMap<String, Inventory>();
+        armors = new HashMap<String, Inventory>();
+        levels = new HashMap<String, Integer>();
+        exps = new HashMap<String, Float>();
     }
 
     /**
@@ -54,13 +54,13 @@ public class TemporaryStorage {
     public void sendToTemp(Player player) {
 
         // インベントリの保存
-        Inventory tempInventory = Bukkit.createInventory(player, 5 * 9);
+        Inventory tempInventory = Bukkit.createInventory(player, 6 * 9);
         for ( ItemStack item : player.getInventory().getContents() ) {
             if ( item != null ) {
                 tempInventory.addItem(item);
             }
         }
-        invs.put(player, tempInventory);
+        invs.put(player.getName(), tempInventory);
 
         // 防具の保存
         Inventory tempArmors = Bukkit.createInventory(player, 9);
@@ -70,7 +70,7 @@ public class TemporaryStorage {
                 tempArmors.setItem(index, armor);
             }
         }
-        armors.put(player, tempArmors);
+        armors.put(player.getName(), tempArmors);
 
         // インベントリの消去とアップデート
         player.getInventory().clear();
@@ -83,8 +83,8 @@ public class TemporaryStorage {
         updateInventory(player);
 
         // 経験値の保存と消去
-        levels.put(player, player.getLevel());
-        exps.put(player, player.getExp());
+        levels.put(player.getName(), player.getLevel());
+        exps.put(player.getName(), player.getExp());
         player.setLevel(0);
         player.setExp(0);
     }
@@ -107,7 +107,7 @@ public class TemporaryStorage {
     public void restoreFromTemp(Player player) {
 
         // データが無いなら何もしない
-        if ( !invs.containsKey(player) ) {
+        if ( !invs.containsKey(player.getName()) ) {
             return;
         }
 
@@ -121,14 +121,14 @@ public class TemporaryStorage {
         });
 
         // インベントリと防具の復帰、更新
-        for ( ItemStack item : invs.get(player).getContents() ) {
+        for ( ItemStack item : invs.get(player.getName()).getContents() ) {
             if ( item != null ) {
                 player.getInventory().addItem(item);
             }
         }
         ItemStack[] armorCont = new ItemStack[4];
         for ( int index=0; index<4; index++ ) {
-            ItemStack armor = armors.get(player).getItem(index);
+            ItemStack armor = armors.get(player.getName()).getItem(index);
             if ( armor != null ) {
                 armorCont[index] = armor;
             } else {
@@ -139,14 +139,34 @@ public class TemporaryStorage {
         updateInventory(player);
 
         // レベルと経験値の復帰
-        player.setLevel(levels.get(player));
-        player.setExp(exps.get(player));
+        player.setLevel(levels.get(player.getName()));
+        player.setExp(exps.get(player.getName()));
 
         // テンポラリの消去
-        invs.remove(player);
-        armors.remove(player);
-        levels.remove(player);
-        exps.remove(player);
+        invs.remove(player.getName());
+        armors.remove(player.getName());
+        levels.remove(player.getName());
+        exps.remove(player.getName());
+    }
+
+    /**
+     * 指定された名前のプレイヤーのtempストレージに、アイテムを追加する
+     * @param name プレイヤー名
+     * @param item アイテム
+     */
+    public void addItem(String name, ItemStack item) {
+
+        // null なら何もしない
+        if ( name == null || item == null ) {
+            return;
+        }
+
+        // データが無いなら何もしない
+        if ( !invs.containsKey(name) ) {
+            return;
+        }
+
+        invs.get(name).addItem(item);
     }
 
     /**
@@ -155,7 +175,7 @@ public class TemporaryStorage {
      * @return 預かっているかどうか
      */
     public boolean isInventoryExists(Player player) {
-        return invs.containsKey(player);
+        return invs.containsKey(player.getName());
     }
 
     /**

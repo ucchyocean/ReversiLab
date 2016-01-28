@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.bitbucket.ucchy.reversi.bridge.VaultEcoBridge;
 import org.bitbucket.ucchy.reversi.game.GameSession;
 import org.bitbucket.ucchy.reversi.game.GameSessionManager;
 import org.bitbucket.ucchy.reversi.game.PlayerMoveChecker;
@@ -37,6 +38,8 @@ public class ReversiLab extends JavaPlugin {
     private ReversiLabCommand command;
     private PlayerMoveChecker checker;
 
+    private VaultEcoBridge vaulteco;
+
     /**
      * プラグインが有効化された時に呼び出されるメソッド
      * @see org.bukkit.plugin.java.JavaPlugin#onEnable()
@@ -57,8 +60,19 @@ public class ReversiLab extends JavaPlugin {
             world = createWorld();
         }
 
+        // VaultEcoのロード
+        if ( getServer().getPluginManager().isPluginEnabled("Vault") ) {
+            vaulteco = VaultEcoBridge.load(
+                    getServer().getPluginManager().getPlugin("Vault"));
+        }
+
         // コンフィグのロード
         config = new ReversiLabConfig();
+
+        if ( config.getBetRewardType() == BetRewardType.ECO
+                && vaulteco == null ) {
+            config.setBetRewardType(BetRewardType.NONE);
+        }
 
         // メッセージをロードする
         Messages.initialize(getFile(), getDataFolder(), config.getLang());
@@ -120,6 +134,7 @@ public class ReversiLab extends JavaPlugin {
         return this.command.onTabComplete(sender, command, alias, args);
     }
 
+
     /**
      * プラグイン用のワールドを生成する
      * @return
@@ -154,6 +169,14 @@ public class ReversiLab extends JavaPlugin {
         world.setDifficulty(Difficulty.PEACEFUL);
 
         return world;
+    }
+
+    /**
+     * 経済プラグインへのアクセスブリッジを取得する
+     * @return VaultEcoBridge、ロードされていなければnullになる
+     */
+    public VaultEcoBridge getVaultEco() {
+        return vaulteco;
     }
 
     /**

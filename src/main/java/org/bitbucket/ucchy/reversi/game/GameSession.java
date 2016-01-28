@@ -95,15 +95,15 @@ public abstract class GameSession {
         // ゲームモードを変更
         player.setGameMode(GameMode.SPECTATOR);
 
-        // 低スペックのサーバーPCだと、ゲームモードが切り替わらないことがあるので、
-        // 5秒後に再設定を試みる。
+        // MultiVerseが入っていると、ワールド間テレポートでSURVIVALに戻されてしまうので、
+        // 2ticks後に再設定を試みる。
         new BukkitRunnable() {
             public void run() {
                 if ( player.isOnline() && player.getGameMode() != GameMode.SPECTATOR ) {
                     player.setGameMode(GameMode.SPECTATOR);
                 }
             }
-        }.runTaskLater(ReversiLab.getInstance(), 5 * 20);
+        }.runTaskLater(ReversiLab.getInstance(), 2);
     }
 
     /**
@@ -130,16 +130,6 @@ public abstract class GameSession {
 
         // ゲームモードを変更
         player.setGameMode(GameMode.SURVIVAL);
-
-        // 低スペックのサーバーPCだと、ゲームモードが切り替わらないことがあるので、
-        // 5秒後に再設定を試みる。
-        new BukkitRunnable() {
-            public void run() {
-                if ( player.isOnline() && player.getGameMode() != GameMode.SURVIVAL ) {
-                    player.setGameMode(GameMode.SURVIVAL);
-                }
-            }
-        }.runTaskLater(ReversiLab.getInstance(), 5 * 20);
     }
 
     /**
@@ -162,16 +152,6 @@ public abstract class GameSession {
 
                 // ゲームモードを変更
                 spectator.setGameMode(GameMode.SURVIVAL);
-
-                // 低スペックのサーバーPCだと、ゲームモードが切り替わらないことがあるので、
-                // 5秒後に再設定を試みる。
-                new BukkitRunnable() {
-                    public void run() {
-                        if ( spectator.isOnline() && spectator.getGameMode() != GameMode.SURVIVAL ) {
-                            spectator.setGameMode(GameMode.SURVIVAL);
-                        }
-                    }
-                }.runTaskLater(ReversiLab.getInstance(), 5 * 20);
             }
         }
     }

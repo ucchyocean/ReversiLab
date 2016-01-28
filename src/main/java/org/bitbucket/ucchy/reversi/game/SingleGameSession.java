@@ -7,8 +7,10 @@ package org.bitbucket.ucchy.reversi.game;
 
 import java.util.ArrayList;
 
+import org.bitbucket.ucchy.reversi.BetRewardType;
 import org.bitbucket.ucchy.reversi.Messages;
 import org.bitbucket.ucchy.reversi.ReversiLab;
+import org.bitbucket.ucchy.reversi.ReversiLabConfig;
 import org.bitbucket.ucchy.reversi.TitleDisplayComponent;
 import org.bitbucket.ucchy.reversi.Utility;
 import org.bitbucket.ucchy.reversi.ai.ReversiAI;
@@ -313,7 +315,8 @@ public class SingleGameSession extends GameSession {
         // どちらが勝ちか確認する。
         int black = getBoard().getBlackCount();
         int white = getBoard().getWhiteCount();
-        int sessionEndWaitSeconds = parent.getReversiLabConfig().getSessionEndWaitSeconds();
+        ReversiLabConfig config = parent.getReversiLabConfig();
+        int sessionEndWaitSeconds = config.getSessionEndWaitSeconds();
         String winner = null;
         String cpuName = Messages.get("NameOfCPU");
         if ( black > white ) {
@@ -379,6 +382,21 @@ public class SingleGameSession extends GameSession {
             blackScore.get(difficulty).incrementPlayed();
             blackScore.get(difficulty).incrementDraw();
             blackScore.save();
+        }
+
+        // プレイヤーが勝利したなら、必要に応じて報酬を与える
+        if ( winner != null && winner.equals(ownerName)
+                && config.getBetRewardType() != BetRewardType.NONE ) {
+
+            if ( config.getBetRewardType() == BetRewardType.ITEM ) {
+                tempStorage.addItem(ownerName, getRewardItem());
+                // TODO メッセージ
+
+            } else {
+                parent.getVaultEco().depositPlayer(getOwnerPlayer(), getRewardEco());
+                // TODO メッセージ
+
+            }
         }
 
         // 15秒後に帰還する
@@ -518,5 +536,57 @@ public class SingleGameSession extends GameSession {
     @Override
     public boolean isPlayer(String playerName) {
         return ownerName.equals(playerName);
+    }
+
+    private ItemStack getBetItem() {
+        ReversiLabConfig config = ReversiLab.getInstance().getReversiLabConfig();
+        switch ( difficulty ) {
+        case EASY:
+            return config.getEasyBetItem();
+        case NORMAL:
+            return config.getNormalBetItem();
+        case HARD:
+            return config.getHardBetItem();
+        }
+        return null;
+    }
+
+    private ItemStack getRewardItem() {
+        ReversiLabConfig config = ReversiLab.getInstance().getReversiLabConfig();
+        switch ( difficulty ) {
+        case EASY:
+            return config.getEasyRewardItem();
+        case NORMAL:
+            return config.getNormalRewardItem();
+        case HARD:
+            return config.getHardRewardItem();
+        }
+        return null;
+    }
+
+    private int getBetEco() {
+        ReversiLabConfig config = ReversiLab.getInstance().getReversiLabConfig();
+        switch ( difficulty ) {
+        case EASY:
+            return config.getEasyBetEco();
+        case NORMAL:
+            return config.getNormalBetEco();
+        case HARD:
+            return config.getHardBetEco();
+        }
+        return 0;
+    }
+
+    private int getRewardEco() {
+        ReversiLabConfig config = ReversiLab.getInstance().getReversiLabConfig();
+        switch ( difficulty ) {
+        case EASY:
+            return config.getEasyRewardEco();
+        case NORMAL:
+            return config.getNormalRewardEco();
+        case HARD:
+            return config.getHardRewardEco();
+        }
+        return 0;
     }
 }
