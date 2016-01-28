@@ -15,8 +15,6 @@ import org.bitbucket.ucchy.reversi.game.SingleGameDifficulty;
  */
 public class ReversiAIHard implements ReversiAI {
 
-    private static boolean DEBUG = false;
-
     private static final int DEPTH = 4;
     private static final int DEPTH_NEAREND = 12;
 
@@ -62,10 +60,6 @@ public class ReversiAIHard implements ReversiAI {
                     s = getMinMaxScore(temp, piece.getReverse(), false, depth - 1, Integer.MIN_VALUE);
                 }
 
-                if ( DEBUG ) {
-                    System.out.println(String.format("(%2d,%2d) %3d", x, y, s));
-                }
-
                 if ( score < s ) {
                     score = s;
                     coordinates[0] = x;
@@ -100,13 +94,6 @@ public class ReversiAIHard implements ReversiAI {
                     s = getBoardScore(temp, piece);
                 } else {
                     s = getMinMaxScore(temp, piece.getReverse(), !isMax, depth - 1, score);
-                }
-
-                if ( DEBUG ) {
-                    for ( int i=0; i<(DEPTH - depth + 1); i++ ) {
-                        System.out.print("  ");
-                    }
-                    System.out.println(String.format("(%2d,%2d) %3d", x, y, s));
                 }
 
                 if ( isMax && score < s ) {
@@ -158,39 +145,5 @@ public class ReversiAIHard implements ReversiAI {
         }
 
         return total;
-    }
-
-    // デバッグエントリ
-    public static void main(String[] args) {
-
-        DEBUG = false;
-        GameBoard board = new GameBoard();
-        ReversiAI ai = new ReversiAIHard();
-
-        board.putAt(4, 2, Piece.BLACK);
-        board.putAt(3, 2, Piece.WHITE);
-        board.putAt(2, 2, Piece.BLACK);
-        board.putAt(5, 4, Piece.WHITE);
-        board.putAt(5, 5, Piece.BLACK);
-        board.putAt(3, 1, Piece.WHITE);
-        board.putAt(2, 0, Piece.BLACK);
-        board.putAt(5, 3, Piece.WHITE);
-        board.putAt(5, 2, Piece.BLACK);
-        board.putAt(3, 0, Piece.WHITE);
-        board.putAt(4, 0, Piece.BLACK);
-        board.putAt(6, 4, Piece.WHITE);
-        board.putAt(7, 5, Piece.BLACK);
-        board.putAt(7, 4, Piece.WHITE);
-        board.putAt(7, 3, Piece.BLACK);
-        //board.putAt(6, 1, Piece.WHITE);
-
-        for ( String line : board.getStringForPrint() ) System.out.println(line);
-
-        DEBUG = true;
-        int[] next = ai.getNext(board, Piece.WHITE);
-        System.out.println(next[0] + " - " + next[1]);
-
-        board.putAt(next[0], next[1], Piece.WHITE);
-        for ( String line : board.getStringForPrint() ) System.out.println(line);
     }
 }
