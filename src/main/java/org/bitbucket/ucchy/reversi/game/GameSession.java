@@ -157,6 +157,14 @@ public abstract class GameSession {
     }
 
     /**
+     * 指定されたプレイヤーにサイドバーを表示する
+     * @param player プレイヤー
+     */
+    public void setSidebar(Player player) {
+        sidebar.setShowPlayer(player);
+    }
+
+    /**
      * このセッションが終了しているかどうかを返す
      * @return 終了しているかどうか
      */

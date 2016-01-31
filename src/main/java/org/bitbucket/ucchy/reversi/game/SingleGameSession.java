@@ -109,10 +109,10 @@ public class SingleGameSession extends GameSession {
 
         // アイテムを持たせる
         if ( isOwnerBlack ) {
-            ItemStack netherBrick = new ItemStack(Material.NETHER_BRICK, 64);
+            ItemStack netherBrick = new ItemStack(Material.NETHER_BRICK);
             owner.getInventory().addItem(netherBrick);
         } else {
-            ItemStack quartzBlock = new ItemStack(Material.QUARTZ_BLOCK, 64);
+            ItemStack quartzBlock = new ItemStack(Material.QUARTZ_BLOCK);
             owner.getInventory().addItem(quartzBlock);
         }
 

@@ -1,9 +1,11 @@
 package org.bitbucket.ucchy.reversi;
 
-import org.bitbucket.ucchy.reversi.game.Piece;
 import org.bitbucket.ucchy.reversi.game.GameSession;
 import org.bitbucket.ucchy.reversi.game.GameSessionManager;
+import org.bitbucket.ucchy.reversi.game.Piece;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,6 +17,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.event.weather.ThunderChangeEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
@@ -134,14 +137,22 @@ public class ReversiLabListener implements Listener {
 
             if ( session == null || session.isEnd() ) {
                 // セッションが無いのに専用ワールドに来た場合は、
-                // 強制リスポーンさせる。
+                // リスポーン地点へ強制送還させる。
                 event.getPlayer().setGameMode(GameMode.SURVIVAL);
-                event.getPlayer().setHealth(0);
+                Location respawn = event.getPlayer().getBedSpawnLocation();
+                if ( respawn == null ) {
+                    respawn = Bukkit.getWorld("world").getSpawnLocation();
+                }
+                event.getPlayer().teleport(respawn, TeleportCause.PLUGIN);
+                return;
+
             } else {
                 // セッションがあってサーバーに再参加した場合は、
-                // 飛行状態に再設定する。
+                // 飛行状態に再設定する。サイドバーを表示する。
                 event.getPlayer().setAllowFlight(true);
                 event.getPlayer().setFlying(true);
+                session.setSidebar(event.getPlayer());
+                return;
             }
         }
     }

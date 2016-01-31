@@ -152,10 +152,10 @@ public class VersusGameSession extends GameSession {
         Player blackPlayer = Utility.getPlayerExact(blackPlayerName);
         Player whitePlayer = Utility.getPlayerExact(whitePlayerName);
 
-        ItemStack netherBrick = new ItemStack(Material.NETHER_BRICK, 64);
+        ItemStack netherBrick = new ItemStack(Material.NETHER_BRICK);
         blackPlayer.getInventory().addItem(netherBrick);
 
-        ItemStack quartzBlock = new ItemStack(Material.QUARTZ_BLOCK, 64);
+        ItemStack quartzBlock = new ItemStack(Material.QUARTZ_BLOCK);
         whitePlayer.getInventory().addItem(quartzBlock);
 
         // サイドバーを設定する
