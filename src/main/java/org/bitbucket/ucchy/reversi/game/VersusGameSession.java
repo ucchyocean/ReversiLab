@@ -93,6 +93,10 @@ public class VersusGameSession extends GameSession {
 
         setPhase(GameSessionPhase.PREPARE);
 
+        // ゲームが成立しなかったときのための返却用掛け金を消去する。
+        ownerBetEcoTemp = 0;
+        ownerBetItemTemp = null;
+
         // メッセージ表示
         sendInfoMessageAll(Messages.get("InformationPreparing"));
 
@@ -415,6 +419,16 @@ public class VersusGameSession extends GameSession {
         setPhase(GameSessionPhase.CANCEL);
 
         sendInfoMessageAll(Messages.get("InformationCancel"));
+
+        // ownerから掛け金を預かっている場合は、返してあげる。
+        Player owner = getOwnerPlayer();
+        if ( owner != null ) {
+            if ( ownerBetItemTemp != null ) {
+                owner.getInventory().addItem(ownerBetItemTemp);
+            } else if ( ownerBetEcoTemp > 0 ) {
+                parent.getVaultEco().depositPlayer(owner, ownerBetEcoTemp);
+            }
+        }
 
         runFinalize();
     }
