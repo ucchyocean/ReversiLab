@@ -23,6 +23,11 @@ InformationEndWait: 'After %seconds seconds, you will teleport back.'
 InformationYourTurn: ' \n&eYour turn. Put your disk.'
 InformationOtherTurn: ' \n&7Opponent''s turn.'
 
+InformationBetItemConsumed: 'Collected bet item &c%amount %material(s)&b from you.'
+InformationBetEcoConsumed: 'Collected bet money &c%eco&b from you.'
+InformationRewardItemPaid: 'You got reward item &c%amount %material(s)&b!'
+InformationRewardEcoPaid: 'You got reward money &c%eco&b!'
+
 ButtonInvitationAccept: '&f[&6Accept (/rev accept)&f]'
 ButtonInvitationDeny: '&f[&6Deny (/rev deny)&f]'
 
@@ -44,6 +49,9 @@ ErrorSpectatorInvalidArgument: 'If you want to join as spectator, please specify
 ErrorProhibitWorlds: 'In this world, Reversi game session is prohibited. Please move to another world.'
 ErrorOwnerInProhibitWorlds: 'Because %owner move to Reversi prohibited world, Reversi game session has been canceled.'
 ErrorOwnerIsOffline: 'Because %owner is offline, Reversi game session has been canceled.'
+
+ErrorBetItemShortage: 'You need bet item %amount %material(s) to play this game.'
+ErrorBetEcoShortage: 'You need bet money %eco to play this game.'
 
 BroadcastSessionStart: '&6Reversi session (%owner vs %opponent) started!'
 BroadcastSessionEnd: '&6Reversi session (%owner vs %opponent) ended!\nwinner: %winner (%black : %white)'

@@ -389,13 +389,16 @@ public class SingleGameSession extends GameSession {
                 && config.getBetRewardType() != BetRewardType.NONE ) {
 
             if ( config.getBetRewardType() == BetRewardType.ITEM ) {
-                tempStorage.addItem(ownerName, getRewardItem());
-                // TODO メッセージ
-
+                ItemStack item = config.getRewardItem(difficulty);
+                tempStorage.addItem(ownerName, item);
+                sendInfoMessage(ownerName, Messages.get("InformationRewardItemPaid",
+                        new String[]{"%material", "%amount"},
+                        new String[]{item.getType().toString(), item.getAmount() + ""}));
             } else {
-                parent.getVaultEco().depositPlayer(getOwnerPlayer(), getRewardEco());
-                // TODO メッセージ
-
+                int amount = config.getRewardEco(difficulty);
+                String format = parent.getVaultEco().format(amount);
+                parent.getVaultEco().depositPlayer(getOwnerPlayer(), amount);
+                sendInfoMessage(ownerName, Messages.get("InformationRewardEcoPaid", "%eco", format));
             }
         }
 
@@ -536,57 +539,5 @@ public class SingleGameSession extends GameSession {
     @Override
     public boolean isPlayer(String playerName) {
         return ownerName.equals(playerName);
-    }
-
-    private ItemStack getBetItem() {
-        ReversiLabConfig config = ReversiLab.getInstance().getReversiLabConfig();
-        switch ( difficulty ) {
-        case EASY:
-            return config.getEasyBetItem();
-        case NORMAL:
-            return config.getNormalBetItem();
-        case HARD:
-            return config.getHardBetItem();
-        }
-        return null;
-    }
-
-    private ItemStack getRewardItem() {
-        ReversiLabConfig config = ReversiLab.getInstance().getReversiLabConfig();
-        switch ( difficulty ) {
-        case EASY:
-            return config.getEasyRewardItem();
-        case NORMAL:
-            return config.getNormalRewardItem();
-        case HARD:
-            return config.getHardRewardItem();
-        }
-        return null;
-    }
-
-    private int getBetEco() {
-        ReversiLabConfig config = ReversiLab.getInstance().getReversiLabConfig();
-        switch ( difficulty ) {
-        case EASY:
-            return config.getEasyBetEco();
-        case NORMAL:
-            return config.getNormalBetEco();
-        case HARD:
-            return config.getHardBetEco();
-        }
-        return 0;
-    }
-
-    private int getRewardEco() {
-        ReversiLabConfig config = ReversiLab.getInstance().getReversiLabConfig();
-        switch ( difficulty ) {
-        case EASY:
-            return config.getEasyRewardEco();
-        case NORMAL:
-            return config.getNormalRewardEco();
-        case HARD:
-            return config.getHardRewardEco();
-        }
-        return 0;
     }
 }

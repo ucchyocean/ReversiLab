@@ -7,8 +7,10 @@ package org.bitbucket.ucchy.reversi.game;
 
 import java.util.ArrayList;
 
+import org.bitbucket.ucchy.reversi.BetRewardType;
 import org.bitbucket.ucchy.reversi.Messages;
 import org.bitbucket.ucchy.reversi.ReversiLab;
+import org.bitbucket.ucchy.reversi.ReversiLabConfig;
 import org.bitbucket.ucchy.reversi.TitleDisplayComponent;
 import org.bitbucket.ucchy.reversi.Utility;
 import org.bitbucket.ucchy.reversi.ranking.PlayerScoreData;
@@ -42,6 +44,9 @@ public class VersusGameSession extends GameSession {
     private Location ownerReturnPoint;
     private Location opponentReturnPoint;
     private TemporaryStorage tempStorage;
+
+    private ItemStack ownerBetItemTemp;
+    private int ownerBetEcoTemp;
 
     /**
      * コンストラクタ
@@ -302,7 +307,8 @@ public class VersusGameSession extends GameSession {
         // どちらが勝ちか確認する。
         int black = getBoard().getBlackCount();
         int white = getBoard().getWhiteCount();
-        int sessionEndWaitSeconds = parent.getReversiLabConfig().getSessionEndWaitSeconds();
+        ReversiLabConfig config = parent.getReversiLabConfig();
+        int sessionEndWaitSeconds = config.getSessionEndWaitSeconds();
         String winner = null;
         String looser = null;
         if ( black > white ) {
@@ -373,6 +379,25 @@ public class VersusGameSession extends GameSession {
             whiteScore.save();
         }
 
+        // 勝利したプレイヤーに、必要に応じて報酬を与える
+        if ( winner != null && config.getBetRewardType() != BetRewardType.NONE  ) {
+            Player winnerPlayer = Utility.getPlayerExact(winner);
+            if ( winnerPlayer != null ) {
+                if ( config.getBetRewardType() == BetRewardType.ITEM ) {
+                    ItemStack item = config.getVersusRewardItem();
+                    tempStorage.addItem(ownerName, item);
+                    sendInfoMessage(winner, Messages.get("InformationRewardItemPaid",
+                            new String[]{"%material", "%amount"},
+                            new String[]{item.getType().toString(), item.getAmount() + ""}));
+                } else {
+                    int amount = config.getVersusRewardEco();
+                    String format = parent.getVaultEco().format(amount);
+                    parent.getVaultEco().depositPlayer(getOwnerPlayer(), amount);
+                    sendInfoMessage(winner, Messages.get("InformationRewardEcoPaid", "%eco", format));
+                }
+            }
+        }
+
         // 15秒後に帰還する
         new BukkitRunnable() {
             public void run() {
@@ -402,6 +427,16 @@ public class VersusGameSession extends GameSession {
         setPhase(GameSessionPhase.INVITATION_DENYED);
 
         sendInfoMessageAll(Messages.get("InformationInvitationDeny"));
+
+        // ownerから掛け金を預かっている場合は、返してあげる。
+        Player owner = getOwnerPlayer();
+        if ( owner != null ) {
+            if ( ownerBetItemTemp != null ) {
+                owner.getInventory().addItem(ownerBetItemTemp);
+            } else if ( ownerBetEcoTemp > 0 ) {
+                parent.getVaultEco().depositPlayer(owner, ownerBetEcoTemp);
+            }
+        }
 
         runFinalize();
     }
@@ -569,6 +604,14 @@ public class VersusGameSession extends GameSession {
 
     public String getWhitePlayerName() {
         return whitePlayerName;
+    }
+
+    public void setOwnerBetItemTemp(ItemStack ownerBetItemTemp) {
+        this.ownerBetItemTemp = ownerBetItemTemp;
+    }
+
+    public void setOwnerBetEcoTemp(int ownerBetEcoTemp) {
+        this.ownerBetEcoTemp = ownerBetEcoTemp;
     }
 
     /**

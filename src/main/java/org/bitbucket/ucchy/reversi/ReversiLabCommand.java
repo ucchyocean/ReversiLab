@@ -17,6 +17,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * ReversiLabのコマンドクラス
@@ -125,6 +127,34 @@ public class ReversiLabCommand implements TabExecutor {
             return true;
         }
 
+        // 掛け金、掛けアイテムが必要な場合は、ここで徴収する。
+        // 無い場合はエラー
+        ReversiLabConfig config = parent.getReversiLabConfig();
+        if ( config.getBetRewardType() != BetRewardType.NONE ) {
+            if ( config.getBetRewardType() == BetRewardType.ITEM ) {
+                ItemStack item = config.getBetItem(difficulty);
+                if ( !hasItem(player, item) ) {
+                    sendErrorMessage(sender, Messages.get("ErrorBetItemShortage",
+                            new String[]{"%material", "%amount"},
+                            new String[]{item.getType().toString(), item.getAmount() + ""}));
+                    return true;
+                }
+                consumeItem(player, item);
+                sendInfoMessage(sender, Messages.get("InformationBetItemConsumed",
+                            new String[]{"%material", "%amount"},
+                            new String[]{item.getType().toString(), item.getAmount() + ""}));
+            } else {
+                int amount = config.getBetEco(difficulty);
+                String format = parent.getVaultEco().format(amount);
+                if ( !parent.getVaultEco().has(player, amount) ) {
+                    sendErrorMessage(sender, Messages.get("ErrorBetEcoShortage", "%eco", format));
+                    return true;
+                }
+                parent.getVaultEco().withdrawPlayer(player, amount);
+                sendInfoMessage(sender, Messages.get("InformationBetEcoConsumed", "%eco", format));
+            }
+        }
+
         // ゲームセッションを作成する
         parent.getGameSessionManager().createNewSingleGameSession(player, difficulty);
 
@@ -184,8 +214,48 @@ public class ReversiLabCommand implements TabExecutor {
             return true;
         }
 
+        // 掛け金、掛けアイテムが必要な場合は、持っているかどうかを確認する。持っていないならエラー
+        ReversiLabConfig config = parent.getReversiLabConfig();
+        if ( config.getBetRewardType() != BetRewardType.NONE ) {
+            if ( config.getBetRewardType() == BetRewardType.ITEM ) {
+                ItemStack item = config.getVersusBetItem();
+                if ( !hasItem(player, item) ) {
+                    sendErrorMessage(sender, Messages.get("ErrorBetItemShortage",
+                            new String[]{"%material", "%amount"},
+                            new String[]{item.getType().toString(), item.getAmount() + ""}));
+                    return true;
+                }
+            } else {
+                int amount = config.getVersusBetEco();
+                String format = parent.getVaultEco().format(amount);
+                if ( !parent.getVaultEco().has(player, amount) ) {
+                    sendErrorMessage(sender, Messages.get("ErrorBetEcoShortage", "%eco", format));
+                    return true;
+                }
+            }
+        }
+
         // ゲームセッションを作成する
-        parent.getGameSessionManager().createNewVersusGameSession(player, target);
+        VersusGameSession session =
+                parent.getGameSessionManager().createNewVersusGameSession(player, target);
+
+        // 掛け金、掛けアイテムを徴収する
+        if ( config.getBetRewardType() != BetRewardType.NONE ) {
+            if ( config.getBetRewardType() == BetRewardType.ITEM ) {
+                ItemStack item = config.getVersusBetItem();
+                consumeItem(player, item);
+                session.setOwnerBetItemTemp(item);
+                sendInfoMessage(sender, Messages.get("InformationBetItemConsumed",
+                        new String[]{"%material", "%amount"},
+                        new String[]{item.getType().toString(), item.getAmount() + ""}));
+            } else {
+                int amount = config.getVersusBetEco();
+                String format = parent.getVaultEco().format(amount);
+                parent.getVaultEco().withdrawPlayer(player, amount);
+                session.setOwnerBetEcoTemp(amount);
+                sendInfoMessage(sender, Messages.get("InformationBetEcoConsumed", "%eco", format));
+            }
+        }
 
         return true;
     }
@@ -231,6 +301,34 @@ public class ReversiLabCommand implements TabExecutor {
             session.runCancel();
             sendErrorMessage(sender, Messages.get("ErrorOwnerInProhibitWorlds", "%owner", session.getOwnerName()));
             return true;
+        }
+
+        // 掛け金、掛けアイテムが必要な場合は、持っているかどうかを確認する。
+        // 持っていないならエラー。持っているなら徴収。
+        ReversiLabConfig config = parent.getReversiLabConfig();
+        if ( config.getBetRewardType() != BetRewardType.NONE ) {
+            if ( config.getBetRewardType() == BetRewardType.ITEM ) {
+                ItemStack item = config.getVersusBetItem();
+                if ( !hasItem(player, item) ) {
+                    sendErrorMessage(sender, Messages.get("ErrorBetItemShortage",
+                            new String[]{"%material", "%amount"},
+                            new String[]{item.getType().toString(), item.getAmount() + ""}));
+                    return true;
+                }
+                consumeItem(player, item);
+                sendInfoMessage(sender, Messages.get("InformationBetItemConsumed",
+                        new String[]{"%material", "%amount"},
+                        new String[]{item.getType().toString(), item.getAmount() + ""}));
+            } else {
+                int amount = config.getVersusBetEco();
+                String format = parent.getVaultEco().format(amount);
+                if ( !parent.getVaultEco().has(player, amount) ) {
+                    sendErrorMessage(sender, Messages.get("ErrorBetEcoShortage", "%eco", format));
+                    return true;
+                }
+                parent.getVaultEco().withdrawPlayer(player, amount);
+                sendInfoMessage(sender, Messages.get("InformationBetEcoConsumed", "%eco", format));
+            }
         }
 
         // 対戦を開始する。
@@ -495,5 +593,61 @@ public class ReversiLabCommand implements TabExecutor {
         if ( message == null || message.equals("") ) return;
         String prefix = Messages.get("PrefixError");
         sender.sendMessage(prefix + message);
+    }
+
+    /**
+     * 指定したプレイヤーが指定したアイテムを十分な個数持っているかどうか確認する
+     * @param player プレイヤー
+     * @param item アイテム
+     * @return 持っているかどうか
+     */
+    private boolean hasItem(Player player, ItemStack item) {
+        //return player.getInventory().contains(item.getType(), item.getAmount());
+        // ↑のコードは、アイテムのデータ値を検査しないのでNG
+
+        int total = 0;
+        for ( ItemStack i : player.getInventory().getContents() ) {
+            if ( i != null && i.getType() == item.getType()
+                    && i.getDurability() == item.getDurability() ) {
+                total += i.getAmount();
+                if ( total >= item.getAmount() ) return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 指定したプレイヤーから指定したアイテムを回収する
+     * @param player プレイヤー
+     * @param item アイテム
+     * @return 回収に成功したかどうか
+     */
+    @SuppressWarnings("deprecation")
+    private boolean consumeItem(Player player, ItemStack item) {
+        Inventory inv = player.getInventory();
+        int remain = item.getAmount();
+        for ( int index=0; index<inv.getSize(); index++ ) {
+            ItemStack i = inv.getItem(index);
+            if ( i == null || i.getType() != item.getType()
+                    || i.getDurability() != item.getDurability() ) {
+                continue;
+            }
+
+            if ( i.getAmount() >= remain ) {
+                if ( i.getAmount() == remain ) {
+                    inv.clear(index);
+                } else {
+                    i.setAmount(i.getAmount() - remain);
+                    inv.setItem(index, i);
+                }
+                remain = 0;
+                break;
+            } else {
+                remain -= i.getAmount();
+                inv.clear(index);
+            }
+        }
+        player.updateInventory();
+        return (remain <= 0);
     }
 }

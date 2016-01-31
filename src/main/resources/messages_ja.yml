@@ -23,6 +23,11 @@ InformationEndWait: '%seconds秒後に、対戦前の場所にテレポートし
 InformationYourTurn: ' \n&eあなたのターンです。石を置いてください。'
 InformationOtherTurn: ' \n&7相手のターンです。'
 
+InformationBetItemConsumed: 'ゲームの掛け金として、&c%material&bを&c%amount&b個支払いました。'
+InformationBetEcoConsumed: 'ゲームの掛け金として、&c%eco&bを支払いました。'
+InformationRewardItemPaid: 'ゲームの賞金として、&c%material&bを&c%amount&b個獲得しました！'
+InformationRewardEcoPaid: 'ゲームの賞金として、&c%eco&b個獲得しました！'
+
 ButtonInvitationAccept: '&f[&6対戦を受ける(/rev accept)&f]'
 ButtonInvitationDeny: '&f[&6対戦を拒否する(/rev deny)&f]'
 
@@ -44,6 +49,9 @@ ErrorSpectatorInvalidArgument: '観客として参加するには、対戦に参
 ErrorProhibitWorlds: 'このワールドでは、リバーシ対戦が禁止されています。別のワールドへ移動してください。'
 ErrorOwnerInProhibitWorlds: '%ownerさんが、リバーシ対戦禁止ワールドに移動したため、リバーシ対戦がキャンセルされました。'
 ErrorOwnerIsOffline: '%ownerさんがオフラインになったため、リバーシ対戦がキャンセルされました。'
+
+ErrorBetItemShortage: 'このゲームを開始するには、%materialが%amount個必要です！'
+ErrorBetEcoShortage: 'このゲームを開始するには、%ecoが必要です！'
 
 BroadcastSessionStart: '&6%owner 対 %opponent のリバーシ対戦が開始しました！'
 BroadcastSessionEnd: '&6%owner 対 %opponent のリバーシ対戦が終了しました！\n%black 対 %white で、%winnerさんの勝利です！'

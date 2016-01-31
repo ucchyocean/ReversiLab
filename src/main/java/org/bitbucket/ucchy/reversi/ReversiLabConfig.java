@@ -8,6 +8,7 @@ package org.bitbucket.ucchy.reversi;
 import java.io.File;
 import java.util.List;
 
+import org.bitbucket.ucchy.reversi.game.SingleGameDifficulty;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -197,6 +198,54 @@ public class ReversiLabConfig {
 
     protected void setBetRewardType(BetRewardType betRewardType) {
         this.betRewardType = betRewardType;
+    }
+
+    public ItemStack getBetItem(SingleGameDifficulty difficulty) {
+        switch ( difficulty ) {
+        case EASY:
+            return getEasyBetItem();
+        case NORMAL:
+            return getNormalBetItem();
+        case HARD:
+            return getHardBetItem();
+        }
+        return null;
+    }
+
+    public ItemStack getRewardItem(SingleGameDifficulty difficulty) {
+        switch ( difficulty ) {
+        case EASY:
+            return getEasyRewardItem();
+        case NORMAL:
+            return getNormalRewardItem();
+        case HARD:
+            return getHardRewardItem();
+        }
+        return null;
+    }
+
+    public int getBetEco(SingleGameDifficulty difficulty) {
+        switch ( difficulty ) {
+        case EASY:
+            return getEasyBetEco();
+        case NORMAL:
+            return getNormalBetEco();
+        case HARD:
+            return getHardBetEco();
+        }
+        return 0;
+    }
+
+    public int getRewardEco(SingleGameDifficulty difficulty) {
+        switch ( difficulty ) {
+        case EASY:
+            return getEasyRewardEco();
+        case NORMAL:
+            return getNormalRewardEco();
+        case HARD:
+            return getHardRewardEco();
+        }
+        return 0;
     }
 
     private static ItemStack getItemStack(String str) {
