@@ -540,4 +540,13 @@ public class SingleGameSession extends GameSession {
     public boolean isPlayer(String playerName) {
         return ownerName.equals(playerName);
     }
+
+    /**
+     * インベントリを預かっていたものと入れ替える。
+     * @param player プレイヤー
+     */
+    @Override
+    public void switchInventory(Player player) {
+        tempStorage.switchWithTemp(player);
+    }
 }

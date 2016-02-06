@@ -150,6 +150,46 @@ public class TemporaryStorage {
     }
 
     /**
+     * 現在の状況とテンポラリの状況を入れ替える
+     * @param player プレイヤー
+     */
+    public void switchWithTemp(Player player) {
+
+        // データが無いなら何もしない
+        if ( !invs.containsKey(player.getName()) ) {
+            return;
+        }
+
+        // インベントリの保存
+        Inventory tempInventory = Bukkit.createInventory(player, 6 * 9);
+        for ( ItemStack item : player.getInventory().getContents() ) {
+            if ( item != null ) {
+                tempInventory.addItem(item);
+            }
+        }
+
+        // 防具の保存
+        Inventory tempArmors = Bukkit.createInventory(player, 9);
+        for ( int index=0; index<4; index++ ) {
+            ItemStack armor = player.getInventory().getArmorContents()[index];
+            if ( armor != null ) {
+                tempArmors.setItem(index, armor);
+            }
+        }
+
+        // リストア
+        restoreFromTemp(player);
+
+        // 上書き保存
+        invs.put(player.getName(), tempInventory);
+        armors.put(player.getName(), tempArmors);
+        levels.put(player.getName(), player.getLevel());
+        exps.put(player.getName(), player.getExp());
+        player.setLevel(0);
+        player.setExp(0);
+    }
+
+    /**
      * 指定された名前のプレイヤーのtempストレージに、アイテムを追加する
      * @param name プレイヤー名
      * @param item アイテム

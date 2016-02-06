@@ -386,4 +386,10 @@ public abstract class GameSession {
      * @param piece 置く石の種類
      */
     public abstract void tryPut(Location location, final Piece piece);
+
+    /**
+     * インベントリを預かっていたものと入れ替える。
+     * @param player プレイヤー
+     */
+    public abstract void switchInventory(Player player);
 }

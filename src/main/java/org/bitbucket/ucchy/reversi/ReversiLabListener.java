@@ -17,6 +17,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.event.weather.ThunderChangeEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
@@ -132,27 +133,55 @@ public class ReversiLabListener implements Listener {
     @EventHandler(priority=EventPriority.NORMAL, ignoreCancelled=true)
     public void onPlayerJoin(PlayerJoinEvent event) {
 
-        GameSession session = manager.getSession(event.getPlayer());
-        if ( event.getPlayer().getWorld().getName().equals(ReversiLab.WORLD_NAME) ) {
+        Player player = event.getPlayer();
+        GameSession session = manager.getSession(player);
+
+        if ( player.getWorld().getName().equals(ReversiLab.WORLD_NAME) ) {
 
             if ( session == null || session.isEnd() ) {
                 // セッションが無いのに専用ワールドに来た場合は、
                 // リスポーン地点へ強制送還させる。
-                event.getPlayer().setGameMode(GameMode.SURVIVAL);
-                Location respawn = event.getPlayer().getBedSpawnLocation();
+                player.setGameMode(GameMode.SURVIVAL);
+                Location respawn = player.getBedSpawnLocation();
                 if ( respawn == null ) {
                     respawn = Bukkit.getWorld("world").getSpawnLocation();
                 }
-                event.getPlayer().teleport(respawn, TeleportCause.PLUGIN);
+                player.teleport(respawn, TeleportCause.PLUGIN);
                 return;
 
             } else {
                 // セッションがあってサーバーに再参加した場合は、
                 // 飛行状態に再設定する。サイドバーを表示する。
-                event.getPlayer().setAllowFlight(true);
-                event.getPlayer().setFlying(true);
-                session.setSidebar(event.getPlayer());
+                player.setAllowFlight(true);
+                player.setFlying(true);
+                session.setSidebar(player);
+
+                // インベントリを再度預かる。
+                if ( session.isPlayer(player.getName()) ) {
+                    session.switchInventory(player);
+                }
+
                 return;
+            }
+        }
+    }
+
+    /**
+     * プレイヤーがサーバーから退出したときに呼び出されるメソッド
+     * @param event
+     */
+    @EventHandler(priority=EventPriority.NORMAL, ignoreCancelled=true)
+    public void onPlayerQuit(PlayerQuitEvent event) {
+
+        Player player = event.getPlayer();
+        GameSession session = manager.getSession(player);
+        if ( session == null || session.isEnd() ) return;
+
+        if ( player.getWorld().getName().equals(ReversiLab.WORLD_NAME) ) {
+
+            if ( session.isPlayer(player.getName()) ) {
+                // 途中で切断してしまった場合は、一時的にインベントリの内容を返してあげる
+                session.switchInventory(player);
             }
         }
     }
