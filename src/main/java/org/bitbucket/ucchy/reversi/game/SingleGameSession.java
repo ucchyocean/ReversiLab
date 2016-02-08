@@ -192,6 +192,18 @@ public class SingleGameSession extends GameSession {
 
             final long startTime = System.currentTimeMillis();
 
+            // CPUが長考したときに、メッセージを表示するためのタスク
+            final BukkitRunnable msgTask = new BukkitRunnable() {
+                public void run() {
+                    Player player = getOwnerPlayer();
+                    if ( player != null ) {
+                        String cpu = Messages.get("NameOfCPU");
+                        sendInfoMessageAll(Messages.get("InformationCPULongTime", "%cpu", cpu));
+                    }
+                }
+            };
+            msgTask.runTaskLater(parent, 40);
+
             // CPUが長考する可能性があるので、非同期処理スレッドで実行する
             new BukkitRunnable() {
                 public void run() {
@@ -199,6 +211,7 @@ public class SingleGameSession extends GameSession {
                     // 次に置く座標を取得
                     final int[] next = ai.getNext(getBoard(), piece);
 
+                    msgTask.cancel();
                     long cpuTimeMillis = System.currentTimeMillis() - startTime;
 
                     // 同期処理に戻す。CPUに1秒かかっていない場合は、演出のために1秒待たせる。

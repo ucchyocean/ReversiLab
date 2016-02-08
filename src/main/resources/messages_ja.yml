@@ -19,6 +19,7 @@ InformationReloaded: 'プラグインの設定が再読み込みされました�
 InformationJoinSpectator: '観客として参加しました。退出するには /rev spectator を実行してください。'
 InformationLeaveSpectator: '観客から退出しました。'
 InformationEndWait: '%seconds秒後に、対戦前の場所にテレポートします。'
+InformationCPULongTime: '%cpuが次の手を探しています。しばらくお待ちください....'
 
 InformationYourTurn: ' \n&eあなたのターンです。石を置いてください。'
 InformationOtherTurn: ' \n&7相手のターンです。'

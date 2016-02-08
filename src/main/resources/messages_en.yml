@@ -19,6 +19,7 @@ InformationReloaded: 'Config and message files were reloaded.'
 InformationJoinSpectator: 'You joined session as spectator. If you want to leave, run command "/rev spectator".'
 InformationLeaveSpectator: 'You have left from the session.'
 InformationEndWait: 'After %seconds seconds, you will teleport back.'
+InformationCPULongTime: 'Now %cpu is finding next point. Please wait....'
 
 InformationYourTurn: ' \n&eYour turn. Put your disk.'
 InformationOtherTurn: ' \n&7Opponent''s turn.'
