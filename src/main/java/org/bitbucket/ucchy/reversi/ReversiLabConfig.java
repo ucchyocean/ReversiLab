@@ -6,6 +6,7 @@
 package org.bitbucket.ucchy.reversi;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.bitbucket.ucchy.reversi.game.SingleGameDifficulty;
@@ -78,6 +79,15 @@ public class ReversiLabConfig {
             } else {
                 Utility.copyFileFromJar(
                         parent.getJarFile(), file, "config.yml", false);
+                if ( !Utility.getDefaultLocaleLanguage().equals("en") ) {
+                    try {
+                        YamlSetter setter = new YamlSetter(file);
+                        setter.setString("lang", Utility.getDefaultLocaleLanguage());
+                        setter.save();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
 

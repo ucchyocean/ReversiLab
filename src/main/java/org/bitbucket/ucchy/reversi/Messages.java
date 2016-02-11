@@ -127,7 +127,7 @@ public class Messages {
 
         // コンフィグフォルダにメッセージファイルがまだ無いなら、コピーしておく
         for ( String filename : new String[]{
-                "messages_en.yml", "messages_ja.yml"} ) {
+                "messages_en.yml", "messages_ja.yml", "messages_zh.yml"} ) {
             File file = new File(configFolder, filename);
             if ( !file.exists() ) {
                 Utility.copyFileFromJar(jar, file, filename, true);
