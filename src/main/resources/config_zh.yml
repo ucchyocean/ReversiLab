@@ -4,29 +4,29 @@
 # @copyright  Copyright ucchy 2016
 
 
-# Message locale. en = English, ja = Japanese, zh = Simplified Chinese.
-lang: 'en'
+#zh -中文 en -英文 jp -日文
+lang: 'zh'
 
-# Send session start and end notification message as server broadcast.
+# 向服务端发送游戏信息
 broadcastSessionStartEnd: true
 
 # The worlds that player cannot start the reversi game session.
 # ex) prohibitWorlds: ['skyblock']
 prohibitWorlds: []
 
-# The wait seconds, from session ends, to teleport back.
+# 游戏结束的等待时间
 sessionEndWaitSeconds: 15
 
 
 # -------------------- Bet Reward Settings --------------------
 
-# Bet and reward types.
-# NONE -> Disable bets and rewards.
-# ITEM -> Enable bet items and reward items.
-# ECO -> Enable bet money and reward money.
-#        If you want to use ECO feature, you need to use Vault and one of Economy plugin.
+# 赌博系统
+# NONE -> 不开启
+# ITEM -> 以道具作为赌注
+# ECO -> Enable bet money and reward money. 需要 Vault 或者 Economy 插件
 betRewardType: NONE
 
+# 道具奖励 注：失败的人将扣除该道具 ITEM-此处为数量
 versusBetItem: DIAMOND
 versusRewardItem: DIAMOND-2
 easyBetItem: WOOD-2
@@ -36,6 +36,7 @@ normalRewardItem: IRON_INGOT-5
 hardBetItem: DIAMOND-2
 hardRewardItem: DIAMOND-5
 
+#经济插件的金钱奖励
 versusBetEco: 10
 versusRewardEco: 20
 easyBetEco: 3

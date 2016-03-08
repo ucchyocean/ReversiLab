@@ -76,6 +76,9 @@ public class ReversiLabConfig {
             if ( Utility.getDefaultLocaleLanguage().equals("ja") ) {
                 Utility.copyFileFromJar(
                         parent.getJarFile(), file, "config_ja.yml", false);
+            } else if ( Utility.getDefaultLocaleLanguage().equals("zh") ) {
+                    Utility.copyFileFromJar(
+                            parent.getJarFile(), file, "config_zh.yml", false);
             } else {
                 Utility.copyFileFromJar(
                         parent.getJarFile(), file, "config.yml", false);

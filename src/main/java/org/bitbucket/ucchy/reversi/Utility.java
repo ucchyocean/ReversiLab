@@ -34,6 +34,7 @@ public class Utility {
 
     private static Boolean isCB178orLaterCache;
     private static Boolean isCB18orLaterCache;
+    private static Boolean isCB19orLaterCache;
 
     /**
      * jarファイルの中に格納されているファイルを、jarファイルの外にコピーするメソッド
@@ -74,7 +75,13 @@ public class Utility {
 
             } else {
                 reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-                writer = new BufferedWriter(new OutputStreamWriter(fos));
+
+                // CB190以降は、書き出すファイルエンコードにUTF-8を強制する。
+                if ( isCB19orLater() ) {
+                    writer = new BufferedWriter(new OutputStreamWriter(fos, "UTF-8"));
+                } else {
+                    writer = new BufferedWriter(new OutputStreamWriter(fos));
+                }
 
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -235,6 +242,17 @@ public class Utility {
             isCB18orLaterCache = isUpperVersion(Bukkit.getBukkitVersion(), "1.8");
         }
         return isCB18orLaterCache;
+    }
+
+    /**
+     * 現在動作中のCraftBukkitが、v1.9 以上かどうかを確認する
+     * @return v1.9以上ならtrue、そうでないならfalse
+     */
+    public static boolean isCB19orLater() {
+        if ( isCB19orLaterCache == null ) {
+            isCB19orLaterCache = isUpperVersion(Bukkit.getBukkitVersion(), "1.9");
+        }
+        return isCB19orLaterCache;
     }
 
     /**
