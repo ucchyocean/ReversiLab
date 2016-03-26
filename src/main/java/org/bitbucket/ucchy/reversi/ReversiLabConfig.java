@@ -32,6 +32,9 @@ public class ReversiLabConfig {
     /** ゲーム終了してから、テレポートして元の場所に戻るまでの、待ち時間（秒） */
     private int sessionEndWaitSeconds;
 
+    /** インベントリ切り替えシステムを使用するかどうか */
+    private boolean enableTemporaryInventory;
+
     private BetRewardType betRewardType;
 
     private ItemStack versusBetItem;
@@ -102,6 +105,7 @@ public class ReversiLabConfig {
         broadcastSessionStartEnd = conf.getBoolean("broadcastSessionStartEnd", true);
         prohibitWorlds = conf.getStringList("prohibitWorlds");
         sessionEndWaitSeconds = conf.getInt("sessionEndWaitSeconds", 15);
+        enableTemporaryInventory = conf.getBoolean("enableTemporaryInventory", false);
 
         betRewardType = BetRewardType.fromString(
                 conf.getString("betRewardType"), BetRewardType.NONE);
@@ -139,6 +143,10 @@ public class ReversiLabConfig {
 
     public int getSessionEndWaitSeconds() {
         return sessionEndWaitSeconds;
+    }
+
+    public boolean isEnableTemporaryInventory() {
+        return enableTemporaryInventory;
     }
 
     public BetRewardType getBetRewardType() {

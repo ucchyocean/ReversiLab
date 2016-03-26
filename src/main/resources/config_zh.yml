@@ -17,6 +17,10 @@ prohibitWorlds: []
 # 游戏结束的等待时间
 sessionEndWaitSeconds: 15
 
+# 是否使用库存交换系统
+enableTemporaryInventory: false
+
+
 
 # -------------------- Bet Reward Settings --------------------
 

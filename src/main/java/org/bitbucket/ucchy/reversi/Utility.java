@@ -25,6 +25,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * ユーティリティクラス
@@ -367,5 +368,33 @@ public class Utility {
         Locale locale = Locale.getDefault();
         if ( locale == null ) return "en";
         return locale.getLanguage();
+    }
+
+    /**
+     * プレイヤーが手に持っているアイテムを取得する
+     * @param player プレイヤー
+     * @return 手に持っているアイテム
+     */
+    @SuppressWarnings("deprecation")
+    public static ItemStack getItemInHand(Player player) {
+        if ( isCB19orLater() ) {
+            return player.getInventory().getItemInMainHand();
+        } else {
+            return player.getItemInHand();
+        }
+    }
+
+    /**
+     * プレイヤーの手に持たせるアイテムを設定する
+     * @param player プレイヤー
+     * @param item アイテム
+     */
+    @SuppressWarnings("deprecation")
+    public static void setItemInHand(Player player, ItemStack item) {
+        if ( isCB19orLater() ) {
+            player.getInventory().setItemInMainHand(item);
+        } else {
+            player.setItemInHand(item);
+        }
     }
 }

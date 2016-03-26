@@ -20,7 +20,6 @@ import org.bitbucket.ucchy.reversi.ai.ReversiAINormal;
 import org.bitbucket.ucchy.reversi.ranking.PlayerScoreData;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
@@ -91,6 +90,12 @@ public class SingleGameSession extends GameSession {
         // 元いた場所を記憶する
         ownerReturnPoint = owner.getLocation();
 
+        // プレイヤーの持ち物を預かる
+        if ( parent.getReversiLabConfig().isEnableTemporaryInventory() ) {
+            tempStorage = new TemporaryStorage();
+            tempStorage.sendToTemp(owner);
+        }
+
         // スタート地点に送る
         owner.teleport(getField().getPrimaryPlayerLocation(), TeleportCause.PLUGIN);
 
@@ -99,22 +104,12 @@ public class SingleGameSession extends GameSession {
         owner.setAllowFlight(true);
         owner.setFlying(true);
 
-        // プレイヤーの身ぐるみを剥がす
-        tempStorage = new TemporaryStorage();
-        tempStorage.sendToTemp(owner);
-
         // 先攻後攻を決める
         int value = (int)(Math.random() * 2);
         isOwnerBlack = ( value == 0 );
 
         // アイテムを持たせる
-        if ( isOwnerBlack ) {
-            ItemStack netherBrick = new ItemStack(Material.NETHER_BRICK);
-            owner.getInventory().addItem(netherBrick);
-        } else {
-            ItemStack quartzBlock = new ItemStack(Material.QUARTZ_BLOCK);
-            owner.getInventory().addItem(quartzBlock);
-        }
+        setDiscItemInHand(owner, isOwnerBlack);
 
         // AIを生成する
         if ( difficulty == SingleGameDifficulty.EASY ) {
@@ -458,6 +453,9 @@ public class SingleGameSession extends GameSession {
             owner.setFallDistance(0);
             owner.setNoDamageTicks(5 * 20);
 
+            // 石を消去する
+            clearDiscItemInInventory(owner);
+
             // 持ち物を預かっているなら返す
             if ( tempStorage != null ) {
                 tempStorage.restoreFromTemp(owner);
@@ -560,6 +558,9 @@ public class SingleGameSession extends GameSession {
      */
     @Override
     public void switchInventory(Player player) {
-        tempStorage.switchWithTemp(player);
+        if ( parent.getReversiLabConfig().isEnableTemporaryInventory()
+                && tempStorage != null ) {
+            tempStorage.switchWithTemp(player);
+        }
     }
 }

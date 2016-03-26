@@ -19,7 +19,6 @@ import org.bitbucket.ucchy.reversi.tellraw.MessageComponent;
 import org.bitbucket.ucchy.reversi.tellraw.MessageParts;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
@@ -121,6 +120,13 @@ public class VersusGameSession extends GameSession {
         ownerReturnPoint = owner.getLocation();
         opponentReturnPoint = opponent.getLocation();
 
+        // プレイヤーの持ち物を預かる
+        if ( parent.getReversiLabConfig().isEnableTemporaryInventory() ) {
+            tempStorage = new TemporaryStorage();
+            tempStorage.sendToTemp(owner);
+            tempStorage.sendToTemp(opponent);
+        }
+
         // スタート地点に送る
         owner.teleport(getField().getPrimaryPlayerLocation(), TeleportCause.PLUGIN);
         opponent.teleport(getField().getSecondaryPlayerLocation(), TeleportCause.PLUGIN);
@@ -132,11 +138,6 @@ public class VersusGameSession extends GameSession {
         opponent.setGameMode(GameMode.SURVIVAL);
         opponent.setAllowFlight(true);
         opponent.setFlying(true);
-
-        // プレイヤーの身ぐるみを剥がす
-        tempStorage = new TemporaryStorage();
-        tempStorage.sendToTemp(owner);
-        tempStorage.sendToTemp(opponent);
 
         // 先攻後攻を決める
         int value = (int)(Math.random() * 2);
@@ -152,11 +153,8 @@ public class VersusGameSession extends GameSession {
         Player blackPlayer = Utility.getPlayerExact(blackPlayerName);
         Player whitePlayer = Utility.getPlayerExact(whitePlayerName);
 
-        ItemStack netherBrick = new ItemStack(Material.NETHER_BRICK);
-        blackPlayer.getInventory().addItem(netherBrick);
-
-        ItemStack quartzBlock = new ItemStack(Material.QUARTZ_BLOCK);
-        whitePlayer.getInventory().addItem(quartzBlock);
+        setDiscItemInHand(blackPlayer, true);
+        setDiscItemInHand(whitePlayer, false);
 
         // サイドバーを設定する
         setSidebarLeast();
@@ -477,6 +475,9 @@ public class VersusGameSession extends GameSession {
             owner.setFallDistance(0);
             owner.setNoDamageTicks(5 * 20);
 
+            // 石を消去する
+            clearDiscItemInInventory(owner);
+
             // 持ち物を預かっているなら返す
             if ( tempStorage != null ) {
                 tempStorage.restoreFromTemp(owner);
@@ -499,6 +500,9 @@ public class VersusGameSession extends GameSession {
             opponent.setFlying(false);
             opponent.setFallDistance(0);
             opponent.setNoDamageTicks(5 * 20);
+
+            // 石を消去する
+            clearDiscItemInInventory(opponent);
 
             // 持ち物を預かっているなら返す
             if ( tempStorage != null ) {
@@ -654,6 +658,9 @@ public class VersusGameSession extends GameSession {
      */
     @Override
     public void switchInventory(Player player) {
-        tempStorage.switchWithTemp(player);
+        if ( parent.getReversiLabConfig().isEnableTemporaryInventory()
+                && tempStorage != null ) {
+            tempStorage.switchWithTemp(player);
+        }
     }
 }

@@ -17,8 +17,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
@@ -346,6 +349,57 @@ public abstract class GameSession {
      */
     protected void removeSidebar(Player player) {
         sidebar.setMainScoreboard(player);
+    }
+
+    /**
+     * 指定されたプレイヤーの手に、石を持たせる。
+     * @param player プレイヤー
+     * @param isBlack 黒かどうか
+     */
+    protected static void setDiscItemInHand(Player player, boolean isBlack) {
+        ItemStack disc;
+        if ( isBlack ) {
+            disc = new ItemStack(Material.NETHER_BRICK);
+            ItemMeta meta = disc.getItemMeta();
+            meta.setDisplayName("Black Stone");
+            disc.setItemMeta(meta);
+        } else {
+            disc = new ItemStack(Material.QUARTZ_BLOCK);
+            ItemMeta meta = disc.getItemMeta();
+            meta.setDisplayName("White Stone");
+            disc.setItemMeta(meta);
+        }
+        ItemStack temp = Utility.getItemInHand(player);
+        Utility.setItemInHand(player, disc);
+        if ( temp != null && temp.getType() != Material.AIR ) {
+            player.getInventory().addItem(temp);
+        }
+    }
+
+    /**
+     * インベントリにある石を消去する。
+     * @param player プレイヤー
+     */
+    protected static void clearDiscItemInInventory(Player player) {
+        ArrayList<Integer> indexiesToRemove = new ArrayList<Integer>();
+        for ( int index=0; index<player.getInventory().getSize(); index++ ) {
+            ItemStack item = player.getInventory().getItem(index);
+            if ( item == null || item.getType() == Material.AIR ) continue;
+            if ( item.getType() == Material.NETHER_BRICK && item.hasItemMeta() ) {
+                ItemMeta meta = item.getItemMeta();
+                if ( meta.hasDisplayName() && meta.getDisplayName().equals("Black Stone") ) {
+                    indexiesToRemove.add(index);
+                }
+            } else if ( item.getType() == Material.QUARTZ_BLOCK && item.hasItemMeta() ) {
+                ItemMeta meta = item.getItemMeta();
+                if ( meta.hasDisplayName() && meta.getDisplayName().equals("White Stone") ) {
+                    indexiesToRemove.add(index);
+                }
+            }
+        }
+        for ( int index : indexiesToRemove ) {
+            player.getInventory().setItem(index, new ItemStack(Material.AIR));
+        }
     }
 
     /**

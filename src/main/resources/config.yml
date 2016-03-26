@@ -17,6 +17,9 @@ prohibitWorlds: []
 # The wait seconds, from session ends, to teleport back.
 sessionEndWaitSeconds: 15
 
+# Enable/disable inventory switching system.
+enableTemporaryInventory: false
+
 
 # -------------------- Bet Reward Settings --------------------
 
