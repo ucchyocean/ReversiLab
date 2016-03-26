@@ -55,12 +55,21 @@ public class TemporaryStorage {
 
         // インベントリの保存
         Inventory tempInventory = Bukkit.createInventory(player, 6 * 9);
-        for ( ItemStack item : player.getInventory().getContents() ) {
-            if ( item != null ) {
+        for ( int index=0; index<36; index++ ) {
+            ItemStack item = player.getInventory().getItem(index);
+            if ( item != null && item.getType() != Material.AIR ) {
                 tempInventory.addItem(item);
             }
         }
         invs.put(player.getName(), tempInventory);
+
+        // オフハンドの保存
+        if ( player.getInventory().getSize() >= 41 ) { // CB1.9以降の場合
+            ItemStack offhand = player.getInventory().getItem(40);
+            if ( offhand != null && offhand.getType() != Material.AIR ) {
+                tempInventory.setItem(40, offhand);
+            }
+        }
 
         // 防具の保存
         Inventory tempArmors = Bukkit.createInventory(player, 9);
@@ -121,9 +130,17 @@ public class TemporaryStorage {
         });
 
         // インベントリと防具の復帰、更新
-        for ( ItemStack item : invs.get(player.getName()).getContents() ) {
-            if ( item != null ) {
+        Inventory inv = invs.get(player.getName());
+        for ( int index=0; index<36; index++ ) {
+            ItemStack item = inv.getItem(index);
+            if ( item != null && item.getType() != Material.AIR ) {
                 player.getInventory().addItem(item);
+            }
+        }
+        if ( player.getInventory().getSize() >= 41 ) { // CB1.9以降の場合
+            ItemStack offhand = inv.getItem(40);
+            if ( offhand != null && offhand.getType() != Material.AIR ) {
+                player.getInventory().setItem(40, offhand);
             }
         }
         ItemStack[] armorCont = new ItemStack[4];
