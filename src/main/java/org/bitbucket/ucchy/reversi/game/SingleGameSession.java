@@ -400,7 +400,14 @@ public class SingleGameSession extends GameSession {
             if ( config.getBetRewardType() == BetRewardType.ITEM ) {
                 ItemStack item = config.getRewardItem(difficulty);
                 if ( item.getType() != Material.AIR ) {
-                    tempStorage.addItem(ownerName, item);
+                    if ( tempStorage != null ) {
+                        tempStorage.addItem(ownerName, item);
+                    } else {
+                        Player owner = Utility.getPlayerExact(ownerName);
+                        if ( owner != null ) {
+                            owner.getInventory().addItem(item);
+                        }
+                    }
                     sendInfoMessage(ownerName, Messages.get("InformationRewardItemPaid",
                             new String[]{"%material", "%amount"},
                             new String[]{item.getType().toString(), item.getAmount() + ""}));
