@@ -69,15 +69,16 @@ public class ReversiLab extends JavaPlugin {
         // コンフィグのロード
         config = new ReversiLabConfig();
 
+        // メッセージをロードする
+        Messages.initialize(getFile(), getDataFolder(), config.getLang());
+        Messages.reload(config.getLang());
+
+        // 掛け金設定がECOなのに、経済プラグインが連携できない場合に、NONEに戻す。see issue #10.
         if ( config.getBetRewardType() == BetRewardType.ECO
                 && vaulteco == null ) {
             getLogger().warning(Messages.get("ErrorVaultEcoNotLoaded"));
             config.setBetRewardType(BetRewardType.NONE);
         }
-
-        // メッセージをロードする
-        Messages.initialize(getFile(), getDataFolder(), config.getLang());
-        Messages.reload(config.getLang());
 
         // マネージャの作成
         gameSessionManager = new GameSessionManager(this);
