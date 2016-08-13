@@ -57,6 +57,8 @@ public class ReversiLabCommand implements TabExecutor {
             return doDeny(sender, command, label, args);
         } else if ( args[0].equalsIgnoreCase("cancel") ) {
             return doCancel(sender, command, label, args);
+        } else if ( args[0].equalsIgnoreCase("resign") ) {
+            return doResign(sender, command, label, args);
         } else if ( args[0].equalsIgnoreCase("spectator") ) {
             return doSpectator(sender, command, label, args);
         } else if ( args[0].equalsIgnoreCase("rank") ) {
@@ -92,7 +94,7 @@ public class ReversiLabCommand implements TabExecutor {
     private boolean doSingle(CommandSender sender, Command command, String label, String[] args) {
 
         // パーミッションのチェック
-        if ( !sender.hasPermission(PERMISSION + "versus") ) {
+        if ( !sender.hasPermission(PERMISSION + "single") ) {
             sendErrorMessage(sender, Messages.get("ErrorNotHavePermission"));
             return true;
         }
@@ -340,7 +342,7 @@ public class ReversiLabCommand implements TabExecutor {
     private boolean doDeny(CommandSender sender, Command command, String label, String[] args) {
 
         // パーミッションのチェック
-        if ( !sender.hasPermission(PERMISSION + "accept") ) {
+        if ( !sender.hasPermission(PERMISSION + "deny") ) {
             sendErrorMessage(sender, Messages.get("ErrorNotHavePermission"));
             return true;
         }
@@ -368,7 +370,7 @@ public class ReversiLabCommand implements TabExecutor {
     private boolean doCancel(CommandSender sender, Command command, String label, String[] args) {
 
         // パーミッションのチェック
-        if ( !sender.hasPermission(PERMISSION + "accept") ) {
+        if ( !sender.hasPermission(PERMISSION + "cancel") ) {
             sendErrorMessage(sender, Messages.get("ErrorNotHavePermission"));
             return true;
         }
@@ -395,6 +397,40 @@ public class ReversiLabCommand implements TabExecutor {
 
         // 対戦をキャンセルする。
         session.runCancel();
+
+        return true;
+    }
+
+    private boolean doResign(CommandSender sender, Command command, String label, String[] args) {
+
+        // パーミッションのチェック
+        if ( !sender.hasPermission(PERMISSION + "resign") ) {
+            sendErrorMessage(sender, Messages.get("ErrorNotHavePermission"));
+            return true;
+        }
+
+        // Playerでないならエラー
+        if ( !(sender instanceof Player) ) {
+            sendErrorMessage(sender, Messages.get("ErrorNotPlayer"));
+            return true;
+        }
+
+        // セッションが無い場合はエラー
+        Player player = (Player)sender;
+        GameSession session = parent.getGameSessionManager().getSession(player);
+        if ( session == null ) {
+            sendErrorMessage(sender, Messages.get("ErrorNotFoundSession"));
+            return true;
+        }
+
+        // 投了不可ならエラー
+        if ( !session.isOKtoResign(player) ) {
+            sendErrorMessage(sender, Messages.get("ErrorCannotResignSession"));
+            return true;
+        }
+
+        // 対戦を投了する。
+        session.resign(player);
 
         return true;
     }

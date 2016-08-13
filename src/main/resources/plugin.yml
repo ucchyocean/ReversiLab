@@ -14,6 +14,7 @@ commands:
            /<command> accept - Accept the match request.
            /<command> deny - Deny the match request.
            /<command> cancel - Cancel game.
+           /<command> resign - Resign game.
            /<command> spectator (player name) - Join game as spectator.
            /<command> rank [win|lose|played|ratio] [versus|easy|normal|hard] - View ranking data.
            /<command> reload - Reload config data.
@@ -39,6 +40,9 @@ permissions:
   reversilab.cancel:
     description: Permission of cancel command.
     default: true
+  reversilab.resign:
+    description: Permission of resign command.
+    default: true
   reversilab.spectator:
     description: Permission of cancel command.
     default: true
@@ -58,6 +62,7 @@ permissions:
       reversilab.accept: true
       reversilab.deny: true
       reversilab.cancel: true
+      reversilab.resign: true
       reversilab.spectator: true
       reversilab.rank: true
       reversilab.reload: true

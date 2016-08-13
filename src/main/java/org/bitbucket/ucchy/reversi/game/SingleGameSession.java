@@ -422,12 +422,55 @@ public class SingleGameSession extends GameSession {
     /**
      * ゲームのCANCELフェーズを実行する
      */
+    @Override
     public void runCancel() {
 
         setPhase(GameSessionPhase.CANCEL);
 
         sendInfoMessageAll(Messages.get("InformationCancel"));
 
+        runFinalize();
+    }
+
+    /**
+     * ゲームを投了する
+     * @param player 投了するプレイヤー
+     * @see org.bitbucket.ucchy.reversi.game.GameSession#resign(org.bukkit.entity.Player)
+     */
+    @Override
+    public void resign(Player player) {
+
+        // メッセージを表示する
+        int black = getBoard().getBlackCount();
+        int white = getBoard().getWhiteCount();
+        String cpuName = Messages.get("NameOfCPU");
+        String msg = Messages.get("InformationEndResign",
+                new String[]{"%black", "%white", "%winner", "%loser"},
+                new String[]{"" + black, "" + white, cpuName, ownerName});
+
+        sendInfoMessageAll(msg);
+
+        if ( parent.getReversiLabConfig().isBroadcastSessionStartEnd() ) {
+            msg = Messages.get("BroadcastSingleSessionEndResign",
+                    new String[]{"%owner", "%cpu", "%difficulty", "%black", "%white", "%winner", "%loser"},
+                    new String[]{ownerName, cpuName, difficulty.toString(), "" + black, "" + white, cpuName, ownerName});
+
+            sendBroadcastInfoMessage(msg);
+        }
+
+        // 盤面をログに記録する
+        for ( String line : getBoard().getStringForPrint() ) {
+            log(line);
+        }
+
+        // ランキングデータに勝敗を加算する
+        PlayerScoreData looserScore = PlayerScoreData.getData(ownerName);
+        looserScore.get(difficulty).incrementPlayed();
+        looserScore.get(difficulty).incrementLose();
+        looserScore.save();
+
+        // すぐに帰還する
+        setPhase(GameSessionPhase.END);
         runFinalize();
     }
 
@@ -517,11 +560,26 @@ public class SingleGameSession extends GameSession {
      * 指定したプレイヤーが、このセッションを中断することができるかどうかを返す
      * @param player プレイヤー
      * @return 中断することができるかどうか
+     * @see org.bitbucket.ucchy.reversi.game.GameSession#isOKtoCancel(org.bukkit.entity.Player)
      */
+    @Override
     public boolean isOKtoCancel(Player player) {
 
-        // IN_GAME中は、キャンセルOK
-        return getPhase() == GameSessionPhase.IN_GAME;
+        // 常にfalse
+        return false;
+    }
+
+    /**
+     * 指定したプレイヤーが、セッションを投了することができるかどうかを判定する
+     * @param player プレイヤー
+     * @return 投了かのうかどうか
+     * @see org.bitbucket.ucchy.reversi.game.GameSession#isOKtoResign(org.bukkit.entity.Player)
+     */
+    @Override
+    public boolean isOKtoResign(Player player) {
+
+        // IN_GAMEならresignできる。
+        return player.getName().equals(ownerName) && getPhase() == GameSessionPhase.IN_GAME;
     }
 
     /**

@@ -428,11 +428,24 @@ public abstract class GameSession {
     public abstract void runCancel();
 
     /**
+     * ゲームを投了する
+     * @param player 投了するプレイヤー
+     */
+    public abstract void resign(Player player);
+
+    /**
      * 指定したプレイヤーが、セッションをキャンセルすることができるかどうかを判定する
      * @param player プレイヤー
      * @return キャンセル可能かどうか
      */
     public abstract boolean isOKtoCancel(Player player);
+
+    /**
+     * 指定したプレイヤーが、セッションを投了することができるかどうかを判定する
+     * @param player プレイヤー
+     * @return 投了かのうかどうか
+     */
+    public abstract boolean isOKtoResign(Player player);
 
     /**
      * 指定した座標に石を置いてみる。

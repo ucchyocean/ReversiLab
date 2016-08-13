@@ -432,6 +432,82 @@ public class VersusGameSession extends GameSession {
     }
 
     /**
+     * ゲームを投了する
+     * @param player 投了するプレイヤー
+     * @see org.bitbucket.ucchy.reversi.game.GameSession#resign(org.bukkit.entity.Player)
+     */
+    @Override
+    public void resign(Player player) {
+
+        // どちらが勝ちか確認する。
+        int black = getBoard().getBlackCount();
+        int white = getBoard().getWhiteCount();
+        String winner = null;
+        String loser = null;
+        if ( player.getName().equals(blackPlayerName) ) {
+            winner = blackPlayerName;
+            loser = whitePlayerName;
+        } else {
+            winner = whitePlayerName;
+            loser = blackPlayerName;
+        }
+
+        // メッセージを表示する
+        String msg = Messages.get("InformationEndResign",
+                new String[]{"%black", "%white", "%winner", "%loser"},
+                new String[]{"" + black, "" + white, winner, loser});
+
+        sendInfoMessageAll(msg);
+
+        if ( parent.getReversiLabConfig().isBroadcastSessionStartEnd() ) {
+            msg = Messages.get("BroadcastSessionEndResign",
+                    new String[]{"%owner", "%opponent", "%black", "%white", "%winner", "%loser"},
+                    new String[]{ownerName, opponentName, "" + black, "" + white, winner, loser});
+
+            sendBroadcastInfoMessage(msg);
+        }
+
+        // 盤面をログに記録する
+        for ( String line : getBoard().getStringForPrint() ) {
+            log(line);
+        }
+
+        // ランキングデータに勝敗を加算する
+        PlayerScoreData winnerScore = PlayerScoreData.getData(winner);
+        winnerScore.getVersus().incrementPlayed();
+        winnerScore.getVersus().incrementWin();
+        winnerScore.save();
+        PlayerScoreData looserScore = PlayerScoreData.getData(loser);
+        looserScore.getVersus().incrementPlayed();
+        looserScore.getVersus().incrementLose();
+        looserScore.save();
+
+        // 勝利したプレイヤーに、必要に応じて報酬を与える
+        ReversiLabConfig config = ReversiLab.getInstance().getReversiLabConfig();
+        if ( config.getBetRewardType() != BetRewardType.NONE  ) {
+            Player winnerPlayer = Utility.getPlayerExact(winner);
+            if ( winnerPlayer != null ) {
+                if ( config.getBetRewardType() == BetRewardType.ITEM ) {
+                    ItemStack item = config.getVersusRewardItem();
+                    tempStorage.addItem(ownerName, item);
+                    sendInfoMessage(winner, Messages.get("InformationRewardItemPaid",
+                            new String[]{"%material", "%amount"},
+                            new String[]{item.getType().toString(), item.getAmount() + ""}));
+                } else {
+                    int amount = config.getVersusRewardEco();
+                    String format = parent.getVaultEco().format(amount);
+                    parent.getVaultEco().depositPlayer(getOwnerPlayer(), amount);
+                    sendInfoMessage(winner, Messages.get("InformationRewardEcoPaid", "%eco", format));
+                }
+            }
+        }
+
+        // すぐに帰還する
+        setPhase(GameSessionPhase.END);
+        runFinalize();
+    }
+
+    /**
      * ゲームのCANCELフェーズを実行する
      */
     public void runInvitationDenyed() {
@@ -584,8 +660,15 @@ public class VersusGameSession extends GameSession {
      * 指定したプレイヤーが、このセッションを中断することができるかどうかを返す
      * @param player プレイヤー
      * @return 中断することができるかどうか
+     * @see org.bitbucket.ucchy.reversi.game.GameSession#isOKtoCancel(org.bukkit.entity.Player)
      */
+    @Override
     public boolean isOKtoCancel(Player player) {
+
+        // 対局者じゃないならfalse
+        if ( !player.getName().equals(ownerName) && !player.getName().equals(opponentName) ) {
+            return false;
+        }
 
         // INVITATION中のオーナーは、キャンセルOK
         if ( getPhase() == GameSessionPhase.INVITATION && player.getName().equals(ownerName) ) {
@@ -606,6 +689,24 @@ public class VersusGameSession extends GameSession {
         }
 
         return false;
+    }
+
+    /**
+     * 指定したプレイヤーが、セッションを投了することができるかどうかを判定する
+     * @param player プレイヤー
+     * @return 投了かのうかどうか
+     * @see org.bitbucket.ucchy.reversi.game.GameSession#isOKtoResign(org.bukkit.entity.Player)
+     */
+    @Override
+    public boolean isOKtoResign(Player player) {
+
+        // 対局者じゃないならfalse
+        if ( !player.getName().equals(ownerName) && !player.getName().equals(opponentName) ) {
+            return false;
+        }
+
+        // IN_GAMEなら投了可能
+        return getPhase() == GameSessionPhase.IN_GAME;
     }
 
     public String getOwnerName() {
