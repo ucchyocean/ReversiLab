@@ -454,11 +454,11 @@ public class VersusGameSession extends GameSession {
         String winner = null;
         String loser = null;
         if ( player.getName().equals(blackPlayerName) ) {
-            winner = blackPlayerName;
-            loser = whitePlayerName;
-        } else {
             winner = whitePlayerName;
             loser = blackPlayerName;
+        } else {
+            winner = blackPlayerName;
+            loser = whitePlayerName;
         }
 
         // メッセージを表示する

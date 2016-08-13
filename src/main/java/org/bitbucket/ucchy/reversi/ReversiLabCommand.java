@@ -81,7 +81,7 @@ public class ReversiLabCommand implements TabExecutor {
         if ( args.length == 1 ) {
             String pre = args[0].toLowerCase();
             ArrayList<String> candidates = new ArrayList<String>();
-            for ( String com : new String[]{"versus", "accept", "deny", "cancel", "spectator", "rank", "reload"} ) {
+            for ( String com : new String[]{"versus", "accept", "deny", "cancel", "resign", "spectator", "rank", "reload"} ) {
                 if ( com.startsWith(pre) ) {
                     candidates.add(com);
                 }
