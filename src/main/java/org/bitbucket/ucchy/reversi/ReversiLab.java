@@ -71,6 +71,7 @@ public class ReversiLab extends JavaPlugin {
 
         if ( config.getBetRewardType() == BetRewardType.ECO
                 && vaulteco == null ) {
+            getLogger().warning(Messages.get("ErrorVaultEcoNotLoaded"));
             config.setBetRewardType(BetRewardType.NONE);
         }
 

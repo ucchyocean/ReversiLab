@@ -56,6 +56,8 @@ ErrorOwnerIsOffline: '%ownerさんがオフラインになったため、リバ�
 ErrorBetItemShortage: 'このゲームを開始するには、%materialが%amount個必要です！'
 ErrorBetEcoShortage: 'このゲームを開始するには、%ecoが必要です！'
 
+ErrorVaultEcoNotLoaded: 'Vaultまたは経済プラグインが検出されなかったため、betRewardTypeがECOからNONEに変更されました。'
+
 BroadcastSessionStart: '&6%owner 対 %opponent のリバーシ対戦が開始しました！'
 BroadcastSessionEnd: '&6%owner 対 %opponent のリバーシ対戦が終了しました！\n%black 対 %white で、%winnerさんの勝利です！'
 BroadcastSessionEndDraw: '&6%owner 対 %opponent のリバーシ対戦が終了しました！\n%black 対 %white で、引き分けです！'

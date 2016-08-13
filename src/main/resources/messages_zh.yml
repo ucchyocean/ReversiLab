@@ -56,6 +56,8 @@ ErrorOwnerIsOffline: '%owner 掉线，游戏关闭'
 ErrorBetItemShortage: '你需要%amount个%material作为赌注才能开始游戏'
 BetEcoShortage: '你需要%eco的赌金才能开始游戏'
 
+ErrorVaultEcoNotLoaded: '无法检测Vault插件或者Economy插件，betRewardType配置已跌至自ECO为NONE'
+
 BroadcastSessionStart: '&6游戏开始！(%owner vs %opponent)'
 BroadcastSessionEnd: '&6游戏结束！(%owner vs %opponent)\n赢家: %winner (%black : %white)'
 BroadcastSessionEndDraw: '&6游戏结束 ！(%owner vs %opponent)\n平局 (%black : %white)'

@@ -56,6 +56,8 @@ ErrorOwnerIsOffline: 'Because %owner has gone offline, Reversi game session has 
 ErrorBetItemShortage: 'You need bet item %amount %material(s) to play this game.'
 ErrorBetEcoShortage: 'You need bet money %eco to play this game.'
 
+ErrorVaultEcoNotLoaded: 'Cannot detect Vault or one of Economy plugin. The betRewardType configuration was fallen from ECO to NONE.'
+
 BroadcastSessionStart: '&6Reversi session (%owner vs %opponent) started!'
 BroadcastSessionEnd: '&6Reversi session (%owner vs %opponent) ended!\nwinner: %winner (%black : %white)'
 BroadcastSessionEndDraw: '&6Reversi session (%owner vs %opponent) ended!\ndraw game (%black : %white)'
