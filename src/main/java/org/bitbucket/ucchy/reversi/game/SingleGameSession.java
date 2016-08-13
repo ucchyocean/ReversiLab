@@ -20,6 +20,7 @@ import org.bitbucket.ucchy.reversi.ai.ReversiAINormal;
 import org.bitbucket.ucchy.reversi.ranking.PlayerScoreData;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
@@ -398,15 +399,19 @@ public class SingleGameSession extends GameSession {
 
             if ( config.getBetRewardType() == BetRewardType.ITEM ) {
                 ItemStack item = config.getRewardItem(difficulty);
-                tempStorage.addItem(ownerName, item);
-                sendInfoMessage(ownerName, Messages.get("InformationRewardItemPaid",
-                        new String[]{"%material", "%amount"},
-                        new String[]{item.getType().toString(), item.getAmount() + ""}));
+                if ( item.getType() != Material.AIR ) {
+                    tempStorage.addItem(ownerName, item);
+                    sendInfoMessage(ownerName, Messages.get("InformationRewardItemPaid",
+                            new String[]{"%material", "%amount"},
+                            new String[]{item.getType().toString(), item.getAmount() + ""}));
+                }
             } else {
                 int amount = config.getRewardEco(difficulty);
-                String format = parent.getVaultEco().format(amount);
-                parent.getVaultEco().depositPlayer(getOwnerPlayer(), amount);
-                sendInfoMessage(ownerName, Messages.get("InformationRewardEcoPaid", "%eco", format));
+                if ( amount > 0 ) {
+                    String format = parent.getVaultEco().format(amount);
+                    parent.getVaultEco().depositPlayer(getOwnerPlayer(), amount);
+                    sendInfoMessage(ownerName, Messages.get("InformationRewardEcoPaid", "%eco", format));
+                }
             }
         }
 

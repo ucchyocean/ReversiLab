@@ -13,6 +13,7 @@ import org.bitbucket.ucchy.reversi.game.SingleGameDifficulty;
 import org.bitbucket.ucchy.reversi.game.VersusGameSession;
 import org.bitbucket.ucchy.reversi.ranking.PlayerScoreData;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -135,25 +136,29 @@ public class ReversiLabCommand implements TabExecutor {
         if ( config.getBetRewardType() != BetRewardType.NONE ) {
             if ( config.getBetRewardType() == BetRewardType.ITEM ) {
                 ItemStack item = config.getBetItem(difficulty);
-                if ( !hasItem(player, item) ) {
-                    sendErrorMessage(sender, Messages.get("ErrorBetItemShortage",
-                            new String[]{"%material", "%amount"},
-                            new String[]{item.getType().toString(), item.getAmount() + ""}));
-                    return true;
+                if ( item.getType() != Material.AIR ) {
+                    if ( !hasItem(player, item) ) {
+                        sendErrorMessage(sender, Messages.get("ErrorBetItemShortage",
+                                new String[]{"%material", "%amount"},
+                                new String[]{item.getType().toString(), item.getAmount() + ""}));
+                        return true;
+                    }
+                    consumeItem(player, item);
+                    sendInfoMessage(sender, Messages.get("InformationBetItemConsumed",
+                                new String[]{"%material", "%amount"},
+                                new String[]{item.getType().toString(), item.getAmount() + ""}));
                 }
-                consumeItem(player, item);
-                sendInfoMessage(sender, Messages.get("InformationBetItemConsumed",
-                            new String[]{"%material", "%amount"},
-                            new String[]{item.getType().toString(), item.getAmount() + ""}));
             } else {
                 int amount = config.getBetEco(difficulty);
-                String format = parent.getVaultEco().format(amount);
-                if ( !parent.getVaultEco().has(player, amount) ) {
-                    sendErrorMessage(sender, Messages.get("ErrorBetEcoShortage", "%eco", format));
-                    return true;
+                if ( amount > 0 ) {
+                    String format = parent.getVaultEco().format(amount);
+                    if ( !parent.getVaultEco().has(player, amount) ) {
+                        sendErrorMessage(sender, Messages.get("ErrorBetEcoShortage", "%eco", format));
+                        return true;
+                    }
+                    parent.getVaultEco().withdrawPlayer(player, amount);
+                    sendInfoMessage(sender, Messages.get("InformationBetEcoConsumed", "%eco", format));
                 }
-                parent.getVaultEco().withdrawPlayer(player, amount);
-                sendInfoMessage(sender, Messages.get("InformationBetEcoConsumed", "%eco", format));
             }
         }
 
@@ -221,18 +226,22 @@ public class ReversiLabCommand implements TabExecutor {
         if ( config.getBetRewardType() != BetRewardType.NONE ) {
             if ( config.getBetRewardType() == BetRewardType.ITEM ) {
                 ItemStack item = config.getVersusBetItem();
-                if ( !hasItem(player, item) ) {
-                    sendErrorMessage(sender, Messages.get("ErrorBetItemShortage",
-                            new String[]{"%material", "%amount"},
-                            new String[]{item.getType().toString(), item.getAmount() + ""}));
-                    return true;
+                if ( item.getType() != Material.AIR ) {
+                    if ( !hasItem(player, item) ) {
+                        sendErrorMessage(sender, Messages.get("ErrorBetItemShortage",
+                                new String[]{"%material", "%amount"},
+                                new String[]{item.getType().toString(), item.getAmount() + ""}));
+                        return true;
+                    }
                 }
             } else {
                 int amount = config.getVersusBetEco();
-                String format = parent.getVaultEco().format(amount);
-                if ( !parent.getVaultEco().has(player, amount) ) {
-                    sendErrorMessage(sender, Messages.get("ErrorBetEcoShortage", "%eco", format));
-                    return true;
+                if ( amount > 0 ) {
+                    String format = parent.getVaultEco().format(amount);
+                    if ( !parent.getVaultEco().has(player, amount) ) {
+                        sendErrorMessage(sender, Messages.get("ErrorBetEcoShortage", "%eco", format));
+                        return true;
+                    }
                 }
             }
         }
@@ -245,17 +254,21 @@ public class ReversiLabCommand implements TabExecutor {
         if ( config.getBetRewardType() != BetRewardType.NONE ) {
             if ( config.getBetRewardType() == BetRewardType.ITEM ) {
                 ItemStack item = config.getVersusBetItem();
-                consumeItem(player, item);
-                session.setOwnerBetItemTemp(item);
-                sendInfoMessage(sender, Messages.get("InformationBetItemConsumed",
-                        new String[]{"%material", "%amount"},
-                        new String[]{item.getType().toString(), item.getAmount() + ""}));
+                if ( item.getType() != Material.AIR ) {
+                    consumeItem(player, item);
+                    session.setOwnerBetItemTemp(item);
+                    sendInfoMessage(sender, Messages.get("InformationBetItemConsumed",
+                            new String[]{"%material", "%amount"},
+                            new String[]{item.getType().toString(), item.getAmount() + ""}));
+                }
             } else {
                 int amount = config.getVersusBetEco();
-                String format = parent.getVaultEco().format(amount);
-                parent.getVaultEco().withdrawPlayer(player, amount);
-                session.setOwnerBetEcoTemp(amount);
-                sendInfoMessage(sender, Messages.get("InformationBetEcoConsumed", "%eco", format));
+                if ( amount > 0 ) {
+                    String format = parent.getVaultEco().format(amount);
+                    parent.getVaultEco().withdrawPlayer(player, amount);
+                    session.setOwnerBetEcoTemp(amount);
+                    sendInfoMessage(sender, Messages.get("InformationBetEcoConsumed", "%eco", format));
+                }
             }
         }
 
@@ -311,25 +324,29 @@ public class ReversiLabCommand implements TabExecutor {
         if ( config.getBetRewardType() != BetRewardType.NONE ) {
             if ( config.getBetRewardType() == BetRewardType.ITEM ) {
                 ItemStack item = config.getVersusBetItem();
-                if ( !hasItem(player, item) ) {
-                    sendErrorMessage(sender, Messages.get("ErrorBetItemShortage",
+                if ( item.getType() != Material.AIR ) {
+                    if ( !hasItem(player, item) ) {
+                        sendErrorMessage(sender, Messages.get("ErrorBetItemShortage",
+                                new String[]{"%material", "%amount"},
+                                new String[]{item.getType().toString(), item.getAmount() + ""}));
+                        return true;
+                    }
+                    consumeItem(player, item);
+                    sendInfoMessage(sender, Messages.get("InformationBetItemConsumed",
                             new String[]{"%material", "%amount"},
                             new String[]{item.getType().toString(), item.getAmount() + ""}));
-                    return true;
                 }
-                consumeItem(player, item);
-                sendInfoMessage(sender, Messages.get("InformationBetItemConsumed",
-                        new String[]{"%material", "%amount"},
-                        new String[]{item.getType().toString(), item.getAmount() + ""}));
             } else {
                 int amount = config.getVersusBetEco();
-                String format = parent.getVaultEco().format(amount);
-                if ( !parent.getVaultEco().has(player, amount) ) {
-                    sendErrorMessage(sender, Messages.get("ErrorBetEcoShortage", "%eco", format));
-                    return true;
+                if ( amount > 0 ) {
+                    String format = parent.getVaultEco().format(amount);
+                    if ( !parent.getVaultEco().has(player, amount) ) {
+                        sendErrorMessage(sender, Messages.get("ErrorBetEcoShortage", "%eco", format));
+                        return true;
+                    }
+                    parent.getVaultEco().withdrawPlayer(player, amount);
+                    sendInfoMessage(sender, Messages.get("InformationBetEcoConsumed", "%eco", format));
                 }
-                parent.getVaultEco().withdrawPlayer(player, amount);
-                sendInfoMessage(sender, Messages.get("InformationBetEcoConsumed", "%eco", format));
             }
         }
 
