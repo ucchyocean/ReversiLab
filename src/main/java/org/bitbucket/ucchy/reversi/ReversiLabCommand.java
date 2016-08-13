@@ -619,6 +619,8 @@ public class ReversiLabCommand implements TabExecutor {
 
         if ( config.getBetRewardType() == BetRewardType.ECO
                 && parent.getVaultEco() == null ) {
+            ReversiLab.getInstance().getLogger().warning(Messages.get("ErrorVaultEcoNotLoaded"));
+            sendErrorMessage(sender, Messages.get("ErrorVaultEcoNotLoaded"));
             config.setBetRewardType(BetRewardType.NONE);
         }
 
