@@ -571,7 +571,7 @@ public class ReversiLabCommand implements TabExecutor {
             String played = "" + data.get(kind).getPlayed();
             String win = "" + data.get(kind).getWin();
             String lose = "" + data.get(kind).getLose();
-            String ratio = String.format("%1$.2f", data.get(kind).getRatio());
+            String ratio = String.format("%1$.1f", data.get(kind).getRatio() * 100);
 
             String line = Messages.get("RankingFormat",
                     new String[]{"%rank", "%name", "%played", "%win", "%lose", "%ratio"},
