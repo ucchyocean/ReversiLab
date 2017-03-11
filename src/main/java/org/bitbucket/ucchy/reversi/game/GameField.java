@@ -6,6 +6,7 @@
 package org.bitbucket.ucchy.reversi.game;
 
 import org.bitbucket.ucchy.reversi.ReversiLab;
+import org.bitbucket.ucchy.reversi.Utility;
 import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
@@ -13,6 +14,7 @@ import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -61,8 +63,15 @@ public class GameField {
         // 草ブロックを生成
         for ( int x = startx; x < startx + 8; x++ ) {
             for ( int z = startz; z < startz + 8; z++ ) {
-                Material material = (x + z) % 2 == 0 ? Material.GRASS : Material.MYCEL;
-                world.getBlockAt(x, origin.getBlockY(), z).setType(material);
+                if ( !Utility.isCB111orLater() ) {
+                    Material material = (x + z) % 2 == 0 ? Material.GRASS : Material.MYCEL;
+                    world.getBlockAt(x, origin.getBlockY(), z).setType(material);
+                } else {
+                    Block block = world.getBlockAt(x, origin.getBlockY(), z);
+                    block.setType(Material.STAINED_GLASS);
+                    int value = (x + z) % 2 == 0 ? 5 : 8;
+                    setBlockData(block, value);
+                }
             }
         }
 
@@ -260,5 +269,15 @@ public class GameField {
         case 15: return Color.TEAL;
         default: return Color.YELLOW;
         }
+    }
+
+    /**
+     * 指定されたブロックに指定されたデータ値を設定します。
+     * @param block ブロック
+     * @param data データ値
+     */
+    @SuppressWarnings("deprecation")
+    private void setBlockData(Block block, int data) {
+        block.setData((byte)data);
     }
 }

@@ -36,6 +36,7 @@ public class Utility {
     private static Boolean isCB178orLaterCache;
     private static Boolean isCB18orLaterCache;
     private static Boolean isCB19orLaterCache;
+    private static Boolean isCB111orLaterCache;
 
     /**
      * jarファイルの中に格納されているファイルを、jarファイルの外にコピーするメソッド
@@ -254,6 +255,17 @@ public class Utility {
             isCB19orLaterCache = isUpperVersion(Bukkit.getBukkitVersion(), "1.9");
         }
         return isCB19orLaterCache;
+    }
+
+    /**
+     * 現在動作中のCraftBukkitが、v1.11 以上かどうかを確認する
+     * @return v1.11以上ならtrue、そうでないならfalse
+     */
+    public static boolean isCB111orLater() {
+        if ( isCB111orLaterCache == null ) {
+            isCB111orLaterCache = isUpperVersion(Bukkit.getBukkitVersion(), "1.11");
+        }
+        return isCB111orLaterCache;
     }
 
     /**
