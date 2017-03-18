@@ -300,7 +300,7 @@ public class VersusGameSession extends GameSession {
     }
 
     /**
-     * ゲームのWINフェーズを実行する
+     * ゲームのENDフェーズを実行する
      */
     public void runEnd() {
 
@@ -560,13 +560,13 @@ public class VersusGameSession extends GameSession {
             // 元いた場所に戻す
             if ( ownerReturnPoint != null ) {
                 owner.teleport(ownerReturnPoint, TeleportCause.PLUGIN);
-            }
 
-            // 飛行状態を解除する
-            owner.setAllowFlight(false);
-            owner.setFlying(false);
-            owner.setFallDistance(0);
-            owner.setNoDamageTicks(5 * 20);
+                // 飛行状態を解除する
+                owner.setAllowFlight(false);
+                owner.setFlying(false);
+                owner.setFallDistance(0);
+                owner.setNoDamageTicks(5 * 20);
+            }
 
             // 石を消去する
             clearDiscItemInInventory(owner);
@@ -586,13 +586,13 @@ public class VersusGameSession extends GameSession {
             // 元いた場所に戻す
             if ( opponentReturnPoint != null ) {
                 opponent.teleport(opponentReturnPoint, TeleportCause.PLUGIN);
-            }
 
-            // 飛行状態を解除する
-            opponent.setAllowFlight(false);
-            opponent.setFlying(false);
-            opponent.setFallDistance(0);
-            opponent.setNoDamageTicks(5 * 20);
+                // 飛行状態を解除する
+                opponent.setAllowFlight(false);
+                opponent.setFlying(false);
+                opponent.setFallDistance(0);
+                opponent.setNoDamageTicks(5 * 20);
+            }
 
             // 石を消去する
             clearDiscItemInInventory(opponent);
