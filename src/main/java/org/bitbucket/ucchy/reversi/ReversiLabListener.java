@@ -14,6 +14,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -22,6 +23,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.event.weather.ThunderChangeEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
+import org.bukkit.util.Vector;
 
 /**
  * ReversiLabのリスナークラス
@@ -137,6 +139,38 @@ public class ReversiLabListener implements Listener {
         // イベントをキャンセルして、すべてのアイテムドロップをキャンセルし、
         // アイテムを捨てることができないようにする。
         event.setCancelled(true);
+    }
+
+    /**
+     * EntityがEntityからダメージを受けた時に呼び出されるメソッド
+     * @param event
+     */
+    @EventHandler(priority=EventPriority.NORMAL, ignoreCancelled=true)
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+
+        // PVPによるダメージ発生でなければ何もしない
+        if ( !(event.getEntity() instanceof Player) ) return;
+        if ( event.getDamager() == null || !(event.getDamager() instanceof Player) ) return;
+
+        Player defender = (Player)event.getEntity();
+        Player attacker = (Player)event.getDamager();
+
+        // リバーシの対局参加者でなければ、イベントを無視する。
+        GameSession session = manager.getSession(defender);
+        if ( session == null ) return;
+
+        // なぐった方も、なぐられた方も、対局者でない場合は、イベントを無視する。
+        if ( !session.isPlayer(defender.getName()) ||
+                !session.isPlayer(attacker.getName()) ) return;
+
+        // ゲームセッションがIN_GAMEでなければ、イベントを無視する。
+        if ( session.getPhase() != GameSessionPhase.IN_GAME ) return;
+
+        // 対戦相手同士がなぐった場合は、なぐられた方のプレイヤーをちょっとどかす
+        Vector vector = new Vector(defender.getLocation().getX() - attacker.getLocation().getX(),
+                0.5, defender.getLocation().getZ() - attacker.getLocation().getZ());
+        vector = vector.normalize().multiply(0.5);
+        defender.setVelocity(vector);
     }
 
     /**
