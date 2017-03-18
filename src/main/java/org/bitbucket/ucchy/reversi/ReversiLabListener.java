@@ -2,6 +2,7 @@ package org.bitbucket.ucchy.reversi;
 
 import org.bitbucket.ucchy.reversi.game.GameSession;
 import org.bitbucket.ucchy.reversi.game.GameSessionManager;
+import org.bitbucket.ucchy.reversi.game.GameSessionPhase;
 import org.bitbucket.ucchy.reversi.game.Piece;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -54,6 +55,9 @@ public class ReversiLabListener implements Listener {
         GameSession session = manager.getSession(player);
         if ( session == null ) return;
 
+        // ゲームセッションがIN_GAMEでなければ、イベントを無視する。
+        if ( session.getPhase() != GameSessionPhase.IN_GAME ) return;
+
         // この時点で、イベントはキャンセルしておく。
         event.setCancelled(true);
 
@@ -86,6 +90,9 @@ public class ReversiLabListener implements Listener {
         GameSession session = manager.getSession(player);
         if ( session == null ) return;
 
+        // ゲームセッションがIN_GAMEでなければ、イベントを無視する。
+        if ( session.getPhase() != GameSessionPhase.IN_GAME ) return;
+
         // イベントをキャンセルする。
         event.setCancelled(true);
     }
@@ -106,7 +113,10 @@ public class ReversiLabListener implements Listener {
         GameSession session = manager.getSession(player);
         if ( session == null ) return;
 
-        // イベントをキャンセルして、すべてのダメージを無効化する。
+        // ゲームセッションがIN_GAMEでなければ、イベントを無視する。
+        if ( session.getPhase() != GameSessionPhase.IN_GAME ) return;
+
+        // それ以外の場合は、イベントをキャンセルして、すべてのダメージを無効化する。
         event.setCancelled(true);
     }
 
@@ -120,6 +130,9 @@ public class ReversiLabListener implements Listener {
         // リバーシの対局参加者でなければ、イベントを無視する。
         GameSession session = manager.getSession(event.getPlayer());
         if ( session == null ) return;
+
+        // ゲームセッションがIN_GAMEでなければ、イベントを無視する。
+        if ( session.getPhase() != GameSessionPhase.IN_GAME ) return;
 
         // イベントをキャンセルして、すべてのアイテムドロップをキャンセルし、
         // アイテムを捨てることができないようにする。
