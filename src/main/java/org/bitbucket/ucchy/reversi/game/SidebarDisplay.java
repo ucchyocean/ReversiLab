@@ -18,7 +18,7 @@ import org.bukkit.scoreboard.Scoreboard;
  */
 public class SidebarDisplay {
 
-    private static final String OBJECTIVE_NAME = "fnafim";
+    private static final String OBJECTIVE_NAME = "reversilab";
 
     private Scoreboard scoreboard;
 
