@@ -3,6 +3,7 @@ version: ${project.version}
 main: org.bitbucket.ucchy.reversi.ReversiLab
 description: Reversi minigame plugin
 author: ucchy
+api-version: 1.13
 
 commands:
   reversi:

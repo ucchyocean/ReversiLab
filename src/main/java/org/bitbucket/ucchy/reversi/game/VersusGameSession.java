@@ -11,12 +11,8 @@ import org.bitbucket.ucchy.reversi.BetRewardType;
 import org.bitbucket.ucchy.reversi.Messages;
 import org.bitbucket.ucchy.reversi.ReversiLab;
 import org.bitbucket.ucchy.reversi.ReversiLabConfig;
-import org.bitbucket.ucchy.reversi.TitleDisplayComponent;
 import org.bitbucket.ucchy.reversi.Utility;
 import org.bitbucket.ucchy.reversi.ranking.PlayerScoreData;
-import org.bitbucket.ucchy.reversi.tellraw.ClickEventType;
-import org.bitbucket.ucchy.reversi.tellraw.MessageComponent;
-import org.bitbucket.ucchy.reversi.tellraw.MessageParts;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -24,6 +20,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import com.github.ucchyocean.messaging.TitleDisplayComponent;
+import com.github.ucchyocean.messaging.tellraw.ClickEventType;
+import com.github.ucchyocean.messaging.tellraw.MessageComponent;
+import com.github.ucchyocean.messaging.tellraw.MessageParts;
 
 /**
  * 対戦のゲームセッション

@@ -6,7 +6,6 @@
 package org.bitbucket.ucchy.reversi.game;
 
 import org.bitbucket.ucchy.reversi.ReversiLab;
-import org.bitbucket.ucchy.reversi.Utility;
 import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.FireworkEffect;
@@ -63,15 +62,9 @@ public class GameField {
         // 草ブロックを生成
         for ( int x = startx; x < startx + 8; x++ ) {
             for ( int z = startz; z < startz + 8; z++ ) {
-                if ( !Utility.isCB111orLater() ) {
-                    Material material = (x + z) % 2 == 0 ? Material.GRASS : Material.MYCEL;
-                    world.getBlockAt(x, origin.getBlockY(), z).setType(material);
-                } else {
-                    Block block = world.getBlockAt(x, origin.getBlockY(), z);
-                    block.setType(Material.STAINED_GLASS);
-                    int value = (x + z) % 2 == 0 ? 5 : 8;
-                    setBlockData(block, value);
-                }
+                Block block = world.getBlockAt(x, origin.getBlockY(), z);
+                block.setType((x + z) % 2 == 0 ?
+                        Material.WHITE_STAINED_GLASS : Material.GREEN_STAINED_GLASS);
             }
         }
 
@@ -114,12 +107,9 @@ public class GameField {
 
         ArmorStand stand = stands[y][x];
 
-        ItemStack item = new ItemStack(Material.STEP);
-        if ( piece == Piece.BLACK ) {
-            item.setDurability((short) 6);
-        } else {
-            item.setDurability((short) 7);
-        }
+        Material mat = (piece == Piece.BLACK) ?
+                Material.NETHER_BRICK_SLAB : Material.QUARTZ_SLAB;
+        ItemStack item = new ItemStack(mat);
         stand.setHelmet(item);
 
         // エフェクト発生
@@ -269,15 +259,5 @@ public class GameField {
         case 15: return Color.TEAL;
         default: return Color.YELLOW;
         }
-    }
-
-    /**
-     * 指定されたブロックに指定されたデータ値を設定します。
-     * @param block ブロック
-     * @param data データ値
-     */
-    @SuppressWarnings("deprecation")
-    private void setBlockData(Block block, int data) {
-        block.setData((byte)data);
     }
 }

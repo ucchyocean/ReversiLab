@@ -12,7 +12,6 @@ import java.util.HashMap;
 import org.bitbucket.ucchy.reversi.Messages;
 import org.bitbucket.ucchy.reversi.ReversiLab;
 import org.bitbucket.ucchy.reversi.Utility;
-import org.bitbucket.ucchy.reversi.tellraw.MessageComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -23,6 +22,8 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import com.github.ucchyocean.messaging.tellraw.MessageComponent;
 
 /**
  * ゲームセッションの抽象クラス

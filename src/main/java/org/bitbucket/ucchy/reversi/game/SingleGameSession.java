@@ -11,7 +11,6 @@ import org.bitbucket.ucchy.reversi.BetRewardType;
 import org.bitbucket.ucchy.reversi.Messages;
 import org.bitbucket.ucchy.reversi.ReversiLab;
 import org.bitbucket.ucchy.reversi.ReversiLabConfig;
-import org.bitbucket.ucchy.reversi.TitleDisplayComponent;
 import org.bitbucket.ucchy.reversi.Utility;
 import org.bitbucket.ucchy.reversi.ai.ReversiAI;
 import org.bitbucket.ucchy.reversi.ai.ReversiAIEasy;
@@ -25,6 +24,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import com.github.ucchyocean.messaging.TitleDisplayComponent;
 
 /**
  * CPU戦のゲームセッション

@@ -17,6 +17,7 @@ import org.bitbucket.ucchy.reversi.game.PlayerMoveChecker;
 import org.bitbucket.ucchy.reversi.ranking.PlayerScoreData;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
+import org.bukkit.GameRule;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.command.Command;
@@ -145,12 +146,17 @@ public class ReversiLab extends JavaPlugin {
 
         WorldCreator creator = new WorldCreator(WORLD_NAME);
 
-        // Nullチャンクジェネレータを設定し、からっぽの世界が生成されるようにする
+        // チャンクジェネレータを設定し、からっぽの世界が生成されるようにする
         creator.generator(new ChunkGenerator() {
+            /*
             public byte[][] generateBlockSections(
                     World world, Random r,
                     int x, int z, ChunkGenerator.BiomeGrid biomes) {
                 return new byte[256 / 16][];
+            }
+            */
+            public ChunkData generateChunkData(World world, Random random, int x, int z, BiomeGrid biome) {
+                return createChunkData(world);
             }
         });
 
@@ -158,10 +164,10 @@ public class ReversiLab extends JavaPlugin {
 
         // ずっと昼にする
         world.setTime(6000);
-        world.setGameRuleValue("doDaylightCycle", "false");
+        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
 
         // MOBが沸かないようにする
-        world.setGameRuleValue("doMobSpawning", "false");
+        world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
 
         // 天候を晴れにする
         world.setStorm(false);
