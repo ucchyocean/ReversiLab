@@ -360,7 +360,7 @@ public abstract class GameSession {
     protected static void setDiscItemInHand(Player player, boolean isBlack) {
         ItemStack disc;
         if ( isBlack ) {
-            disc = new ItemStack(Material.NETHER_BRICK);
+            disc = new ItemStack(Material.NETHER_BRICKS);
             ItemMeta meta = disc.getItemMeta();
             meta.setDisplayName("Black Stone");
             disc.setItemMeta(meta);
@@ -386,7 +386,7 @@ public abstract class GameSession {
         for ( int index=0; index<player.getInventory().getSize(); index++ ) {
             ItemStack item = player.getInventory().getItem(index);
             if ( item == null || item.getType() == Material.AIR ) continue;
-            if ( item.getType() == Material.NETHER_BRICK && item.hasItemMeta() ) {
+            if ( item.getType() == Material.NETHER_BRICKS && item.hasItemMeta() ) {
                 ItemMeta meta = item.getItemMeta();
                 if ( meta.hasDisplayName() && meta.getDisplayName().equals("Black Stone") ) {
                     indexiesToRemove.add(index);

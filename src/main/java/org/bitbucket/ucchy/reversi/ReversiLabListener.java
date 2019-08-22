@@ -64,7 +64,7 @@ public class ReversiLabListener implements Listener {
         event.setCancelled(true);
 
         Piece piece;
-        if ( event.getBlock().getType() == Material.NETHER_BRICK ) {
+        if ( event.getBlock().getType() == Material.NETHER_BRICKS ) {
             piece = Piece.BLACK;
         } else if ( event.getBlock().getType() == Material.QUARTZ_BLOCK ) {
             piece = Piece.WHITE;
